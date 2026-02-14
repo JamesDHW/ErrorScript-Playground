@@ -1,0 +1,1 @@
+{"version":3,"file":"projectsRunner.d.ts","sourceRoot":"","sources":["../../../src/testRunner/projectsRunner.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,OAAO,MAAM,0BAA0B,CAAC;AAqCpD,qBAAa,aAAc,SAAQ,OAAO,CAAC,UAAU;IAC1C,kBAAkB,IAAI,MAAM,EAAE;IAQ9B,IAAI,IAAI,OAAO,CAAC,cAAc;IAI9B,eAAe,IAAI,IAAI;IAS9B,OAAO,CAAC,kBAAkB;CAmB7B"}

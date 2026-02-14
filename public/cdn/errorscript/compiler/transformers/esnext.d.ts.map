@@ -1,0 +1,1 @@
+{"version":3,"file":"esnext.d.ts","sourceRoot":"","sources":["../../../../src/compiler/transformers/esnext.ts"],"names":[],"mappings":"AAAA,OAAO,EAOH,MAAM,EAwCN,UAAU,EAGV,qBAAqB,EAWxB,MAAM,sBAAsB,CAAC;AAQ9B,gBAAgB;AAChB,wBAAgB,eAAe,CAAC,OAAO,EAAE,qBAAqB,GAAG,CAAC,CAAC,EAAE,UAAU,GAAG,MAAM,KAAK,UAAU,GAAG,MAAM,CAorB/G"}

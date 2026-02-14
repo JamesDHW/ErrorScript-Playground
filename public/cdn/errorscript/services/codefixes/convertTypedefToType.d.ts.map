@@ -1,0 +1,1 @@
+{"version":3,"file":"convertTypedefToType.d.ts","sourceRoot":"","sources":["../../../../src/services/codefixes/convertTypedefToType.ts"],"names":[],"mappings":"AAKA,OAAO,EAaH,QAAQ,EAKR,IAAI,EAOP,MAAM,sBAAsB,CAAC;AAuN9B,gBAAgB;AAChB,wBAAgB,oBAAoB,CAAC,IAAI,EAAE,IAAI,GAAG,SAAS,QAAQ,EAAE,CAMpE"}

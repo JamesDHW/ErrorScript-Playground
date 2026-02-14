@@ -1,0 +1,1 @@
+{"version":3,"file":"nativeThrowMap.d.ts","sourceRoot":"","sources":["../../../src/compiler/nativeThrowMap.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,aAAa;IAC1B,MAAM,CAAC,EAAE,MAAM,EAAE,CAAC;IAClB,OAAO,CAAC,EAAE,MAAM,EAAE,CAAC;CACtB;AACD,MAAM,MAAM,QAAQ,GAAG,MAAM,CAAC,MAAM,EAAE,aAAa,CAAC,CAAC;AAgBrD,wBAAgB,iBAAiB,IAAI,QAAQ,CAE5C"}
