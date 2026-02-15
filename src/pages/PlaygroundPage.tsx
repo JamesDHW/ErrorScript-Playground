@@ -5,6 +5,20 @@ import { loadSandbox, type SandboxApi } from '../lib/loadSandbox'
 
 type OutputTab = 'JS' | 'DTS' | 'Errors'
 
+type ErrorItem = { message: string; line?: number; code?: number }
+
+type MessageChain = string | { messageText: string | MessageChain; next?: MessageChain[] }
+
+function flattenMessageText(messageText: MessageChain): string {
+  if (typeof messageText === 'string') return messageText
+  const first =
+    typeof messageText.messageText === 'string'
+      ? messageText.messageText
+      : flattenMessageText(messageText.messageText)
+  const rest = (messageText.next ?? []).map(flattenMessageText)
+  return [first, ...rest].join('\n')
+}
+
 const TARGET_OPTIONS = [
   { value: 1, label: 'ES5' },
   { value: 2, label: 'ES2015' },
@@ -57,7 +71,7 @@ export function PlaygroundPage() {
   const [activeTab, setActiveTab] = useState<OutputTab>('Errors')
   const [jsOutput, setJsOutput] = useState('')
   const [dtsOutput, setDtsOutput] = useState('')
-  const [errors, setErrors] = useState<Array<{ message: string; line?: number; code?: number }>>([])
+  const [errors, setErrors] = useState<ErrorItem[]>([])
   const [target, setTarget] = useState(99)
   const [moduleKind, setModuleKind] = useState(2)
   const [strict, setStrict] = useState(true)
@@ -78,30 +92,61 @@ export function PlaygroundPage() {
       setDtsOutput('')
     }
     try {
-      const program = await sb.createTSProgram()
-      const rootNames = program.getRootFileNames()
-      const fileName = rootNames[0]
-      if (!fileName) {
+      const sbEx = sb as SandboxApi & {
+        monaco?: {
+          languages: {
+            typescript: {
+              getTypeScriptWorker(): Promise<
+                (uri: { toString(): string }) => Promise<{
+                  getSyntacticDiagnostics(uri: string): Promise<
+                    Array<{
+                      start: number
+                      messageText: MessageChain
+                      code?: number
+                    }>
+                  >
+                  getSemanticDiagnostics(uri: string): Promise<
+                    Array<{
+                      start: number
+                      messageText: MessageChain
+                      code?: number
+                    }>
+                  >
+                }>
+              >
+            }
+          }
+        }
+        editor?: {
+          getModel(): {
+            uri: { toString(): string }
+            getPositionAt(offset: number): { lineNumber: number }
+          }
+        }
+      }
+      const monaco = sbEx.monaco
+      const model = sbEx.editor?.getModel?.()
+      if (!monaco?.languages?.typescript?.getTypeScriptWorker || !model) {
         setErrors([])
         return
       }
-      const sourceFile = program.getSourceFile(fileName)
-      if (!sourceFile) {
-        setErrors([])
-        return
-      }
-      const syn = program.getSyntacticDiagnostics(sourceFile)
-      const sem = program.getSemanticDiagnostics(sourceFile)
-      const ts = sb.ts
-      const all = [...syn, ...sem]
-      setErrors(
-        all.map((d) => ({
-          message: ts.flattenDiagnosticMessageText(d.messageText, '\n'),
-          line: d.file && d.start !== undefined ? ts.getLineAndCharacterOfPosition(d.file, d.start).line + 1 : undefined,
-          code: d.code,
-        })),
-      )
-    } catch {
+      const uri = model.uri.toString()
+      const getWorker = await monaco.languages.typescript.getTypeScriptWorker()
+      const worker = await getWorker(model.uri)
+      const [syntactic, semantic] = await Promise.all([
+        worker.getSyntacticDiagnostics(uri),
+        worker.getSemanticDiagnostics(uri),
+      ])
+      const errorsList: ErrorItem[] = [...syntactic, ...semantic].map((d) => ({
+        message: flattenMessageText(d.messageText),
+        line: model.getPositionAt(d.start).lineNumber,
+        code: d.code,
+      }))
+      const errorsDebug = window.location.search.includes('errorsDebug=1')
+      if (errorsDebug) console.log('[Playground Errors] worker diagnostics:', errorsList.length)
+      setErrors(errorsList)
+    } catch (err) {
+      console.error('[Playground Errors] worker diagnostics failed:', err)
       setErrors([])
     }
   }, [])
@@ -230,7 +275,7 @@ export function PlaygroundPage() {
         {sandbox?.ts && (
           <span
             className="ml-auto mr-2 text-xs text-white/50 hidden sm:inline"
-            title="Main thread (Errors tab, Emit, DTS) uses this TypeScript"
+            title="Errors, JS, and DTS come from the same ErrorScript worker as the editor"
           >
             TS: {(sandbox.ts as { version?: string }).version ?? '?'}
           </span>
@@ -273,6 +318,11 @@ export function PlaygroundPage() {
             {!loading && activeTab === 'DTS' && dtsOutput}
             {!loading && activeTab === 'Errors' && (
               <div>
+                {searchParams.get('errorsDebug') === '1' && (
+                  <div style={{ marginBottom: '0.75rem', fontSize: '0.8rem', opacity: 0.8 }}>
+                    Debug: {errors.length} diagnostics. Open DevTools Console for full logs.
+                  </div>
+                )}
                 {errors.length === 0 && 'No errors.'}
                 {errors.map((e, i) => (
                   <div key={i} className="mb-2">
