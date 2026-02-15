@@ -1,58 +1,23 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import 'tailwindcss';
 
-  color-scheme: dark;
-  color: rgba(255, 255, 255, 0.9);
-  background-color: #1a1a1a;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@theme {
+  --color-brand: #c43333;
 }
 
-a {
-  font-weight: 500;
-  color: #8ab4f8;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #a8c7fa;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-#root {
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #2d2d2d;
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+@layer base {
+  :root {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+  #root {
+    min-height: 100vh;
+  }
 }

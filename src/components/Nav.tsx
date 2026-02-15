@@ -1,66 +1,24 @@
 import { Link } from 'react-router-dom'
 
-const BRAND_COLOR = '#c43333'
-
 export function Nav() {
   return (
-    <header
-      style={{
-        backgroundColor: '#c43333',
-        padding: '0.5rem 1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
+    <header className="flex items-center justify-between bg-brand px-3 py-2 sm:px-6">
       <Link
         to="/"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          color: 'white',
-          textDecoration: 'none',
-          fontWeight: 600,
-          fontSize: '1.1rem',
-        }}
+        className="flex items-center gap-2 text-white no-underline font-semibold text-base min-w-0 sm:text-lg"
       >
         <img
           src="/ErrorScript.png"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 28,
-            height: 28,
-            backgroundColor: BRAND_COLOR,
-            borderRadius: 4,
-            color: 'white',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-          }}
+          alt=""
+          className="shrink-0 inline-flex items-center justify-center w-7 h-7 bg-brand rounded"
         />
-        ErrorScript
+        <span className="truncate">ErrorScript</span>
       </Link>
-      <nav style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-        <Link
-          to="/play"
-          style={{
-            color: BRAND_COLOR,
-            textDecoration: 'none',
-            fontWeight: 500,
-          }}
-        >
+      <nav className="flex items-center gap-3 shrink-0 sm:gap-6">
+        <Link to="/play" className="text-brand no-underline font-medium text-sm sm:text-base">
           Playground
         </Link>
-        <Link
-          to="/about"
-          style={{
-            color: "white",
-            textDecoration: 'none',
-            fontWeight: 500,
-          }}
-        >
+        <Link to="/about" className="text-white no-underline font-medium text-sm sm:text-base">
           About
         </Link>
       </nav>
