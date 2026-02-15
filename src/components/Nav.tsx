@@ -53,6 +53,16 @@ export function Nav() {
         >
           Playground
         </Link>
+        <Link
+          to="/about"
+          style={{
+            color: "white",
+            textDecoration: 'none',
+            fontWeight: 500,
+          }}
+        >
+          About
+        </Link>
       </nav>
     </header>
   )
