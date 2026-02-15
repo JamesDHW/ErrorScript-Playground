@@ -981,6 +981,12 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Add_instanceof_narrowing_to_catch_block_95204" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Add instanceof narrowing to catch block]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Add_missing_attributes_95167" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add missing attributes]]></Val>
@@ -1095,6 +1101,12 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Add_rejects_clause_to_function_95203" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Add rejects clause to function]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Add_resolution_mode_import_attribute_95196" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add 'resolution-mode' import attribute]]></Val>
@@ -1122,6 +1134,12 @@
             <Item ItemId=";Add_satisfies_and_an_inline_type_assertion_with_0_90068" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add satisfies and an inline type assertion with '{0}']]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Add_throws_clause_to_function_95202" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Add throws clause to function]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -1182,6 +1200,18 @@
             <Item ItemId=";Add_void_to_all_Promises_resolved_without_a_value_95144" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add 'void' to all Promises resolved without a value]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Add_void_to_all_unhandled_promise_calls_in_file_95201" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Add void to all unhandled promise calls in file]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Add_void_to_unhandled_promise_95200" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Add void to unhandled promise]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -5688,6 +5718,18 @@
             <Item ItemId=";Inference_from_class_expressions_is_not_supported_with_isolatedDeclarations_9022" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Inference from class expressions is not supported with --isolatedDeclarations.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_veri_18071" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Inferred rejection type is unknown (possible recursion or analysis limit); declared type cannot be verified.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verifie_18070" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Inferred thrown type is unknown (possible recursion or analysis limit); declared type cannot be verified.]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -11550,6 +11592,12 @@
             <Item ItemId=";Wrap_in_try_Slashcatch_95198" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Wrap in try/catch]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Wrap_in_try_Slashcatch_with_type_narrowing_95205" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Wrap in try/catch with type narrowing]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>

@@ -11163,7 +11163,8 @@ declare namespace ts {
     /** @internal */
     enum CommentDirectiveType {
         ExpectError = 0,
-        Ignore = 1,
+        ExpectException = 1,
+        Ignore = 2,
     }
     interface Bundle extends Node {
         readonly kind: SyntaxKind.Bundle;
@@ -14988,7 +14989,7 @@ declare namespace ts {
         createVariableDeclarationList(declarations: readonly VariableDeclaration[], flags?: NodeFlags): VariableDeclarationList;
         updateVariableDeclarationList(node: VariableDeclarationList, declarations: readonly VariableDeclaration[]): VariableDeclarationList;
         createFunctionDeclaration(modifiers: readonly ModifierLike[] | undefined, asteriskToken: AsteriskToken | undefined, name: string | Identifier | undefined, typeParameters: readonly TypeParameterDeclaration[] | undefined, parameters: readonly ParameterDeclaration[], type: TypeNode | undefined, body: Block | undefined, throwsType?: TypeNode, rejectsType?: TypeNode): FunctionDeclaration;
-        updateFunctionDeclaration(node: FunctionDeclaration, modifiers: readonly ModifierLike[] | undefined, asteriskToken: AsteriskToken | undefined, name: Identifier | undefined, typeParameters: readonly TypeParameterDeclaration[] | undefined, parameters: readonly ParameterDeclaration[], type: TypeNode | undefined, body: Block | undefined): FunctionDeclaration;
+        updateFunctionDeclaration(node: FunctionDeclaration, modifiers: readonly ModifierLike[] | undefined, asteriskToken: AsteriskToken | undefined, name: Identifier | undefined, typeParameters: readonly TypeParameterDeclaration[] | undefined, parameters: readonly ParameterDeclaration[], type: TypeNode | undefined, body: Block | undefined, throwsType?: TypeNode, rejectsType?: TypeNode): FunctionDeclaration;
         createClassDeclaration(modifiers: readonly ModifierLike[] | undefined, name: string | Identifier | undefined, typeParameters: readonly TypeParameterDeclaration[] | undefined, heritageClauses: readonly HeritageClause[] | undefined, members: readonly ClassElement[]): ClassDeclaration;
         updateClassDeclaration(node: ClassDeclaration, modifiers: readonly ModifierLike[] | undefined, name: Identifier | undefined, typeParameters: readonly TypeParameterDeclaration[] | undefined, heritageClauses: readonly HeritageClause[] | undefined, members: readonly ClassElement[]): ClassDeclaration;
         createInterfaceDeclaration(modifiers: readonly ModifierLike[] | undefined, name: string | Identifier, typeParameters: readonly TypeParameterDeclaration[] | undefined, heritageClauses: readonly HeritageClause[] | undefined, members: readonly TypeElement[]): InterfaceDeclaration;
@@ -16176,6 +16177,7 @@ declare namespace ts {
     /** @internal */
     interface CommentDirectivesMap {
         getUnusedExpectations(): CommentDirective[];
+        getDirectiveForLine(matchedLine: number): CommentDirective | undefined;
         markUsed(matchedLine: number): boolean;
     }
     interface UserPreferences {
@@ -19132,6 +19134,12 @@ declare namespace ts {
         Add_resolution_mode_import_attribute_to_all_type_only_imports_that_need_it: DiagnosticMessage;
         Wrap_in_try_Slashcatch: DiagnosticMessage;
         Wrap_all_unhandled_in_try_Slashcatch: DiagnosticMessage;
+        Add_void_to_unhandled_promise: DiagnosticMessage;
+        Add_void_to_all_unhandled_promise_calls_in_file: DiagnosticMessage;
+        Add_throws_clause_to_function: DiagnosticMessage;
+        Add_rejects_clause_to_function: DiagnosticMessage;
+        Add_instanceof_narrowing_to_catch_block: DiagnosticMessage;
+        Wrap_in_try_Slashcatch_with_type_narrowing: DiagnosticMessage;
         No_value_exists_in_scope_for_the_shorthand_property_0_Either_declare_one_or_provide_an_initializer: DiagnosticMessage;
         Classes_may_not_have_a_field_named_constructor: DiagnosticMessage;
         JSX_expressions_may_not_use_the_comma_operator_Did_you_mean_to_write_an_array: DiagnosticMessage;
@@ -19189,6 +19197,8 @@ declare namespace ts {
         throws_clause_is_not_allowed_on_a_Promise_like_return_type: DiagnosticMessage;
         Declared_throws_type_0_does_not_include_inferred_thrown_type_1: DiagnosticMessage;
         Declared_rejects_type_0_does_not_include_inferred_rejection_type_1: DiagnosticMessage;
+        Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: DiagnosticMessage;
+        Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: DiagnosticMessage;
     };
     /** @internal */
     function tokenIsIdentifierOrKeyword(token: SyntaxKind): boolean;

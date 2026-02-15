@@ -22,6 +22,7 @@ A browser playground that runs your [ErrorScript](https://github.com/your-org/Er
 2. **Ensure the CDN assets are present**
 
    - **`public/cdn/errorscript/`** — Your fork’s build: `typescript.js`, `lib.*.d.ts`, and `tsWorkerWrapper.js` (see [CDN setup](#cdn-setup)).
+      - run `pnpm run fetch-latest-errorscript` after a build of ErrorScript
    - **`public/cdn/monaco/`** — Monaco editor assets (`min/vs/...`). If missing, copy from `node_modules/monaco-editor/min` into `public/cdn/monaco/`.
 
 3. Open the app, go to **Play**, and start typing. The header shows the active TS version (e.g. `TS: 6.0.0-errorscript`).

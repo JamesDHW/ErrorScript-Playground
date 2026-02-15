@@ -2081,6 +2081,12 @@
   "Add_resolution_mode_import_attribute_to_all_type_only_imports_that_need_it_95197": "Add 'resolution-mode' import attribute to all type-only imports that need it",
   "Wrap_in_try_Slashcatch_95198": "Wrap in try/catch",
   "Wrap_all_unhandled_in_try_Slashcatch_95199": "Wrap all unhandled in try/catch",
+  "Add_void_to_unhandled_promise_95200": "Add void to unhandled promise",
+  "Add_void_to_all_unhandled_promise_calls_in_file_95201": "Add void to all unhandled promise calls in file",
+  "Add_throws_clause_to_function_95202": "Add throws clause to function",
+  "Add_rejects_clause_to_function_95203": "Add rejects clause to function",
+  "Add_instanceof_narrowing_to_catch_block_95204": "Add instanceof narrowing to catch block",
+  "Wrap_in_try_Slashcatch_with_type_narrowing_95205": "Wrap in try/catch with type narrowing",
   "No_value_exists_in_scope_for_the_shorthand_property_0_Either_declare_one_or_provide_an_initializer_18004": "No value exists in scope for the shorthand property '{0}'. Either declare one or provide an initializer.",
   "Classes_may_not_have_a_field_named_constructor_18006": "Classes may not have a field named 'constructor'.",
   "JSX_expressions_may_not_use_the_comma_operator_Did_you_mean_to_write_an_array_18007": "JSX expressions may not use the comma operator. Did you mean to write an array?",
@@ -2137,5 +2143,7 @@
   "rejects_clause_requires_a_Promise_like_return_type_18066": "rejects clause requires a Promise-like return type.",
   "throws_clause_is_not_allowed_on_a_Promise_like_return_type_18067": "throws clause is not allowed on a Promise-like return type.",
   "Declared_throws_type_0_does_not_include_inferred_thrown_type_1_18068": "Declared throws type '{0}' does not include inferred thrown type '{1}'.",
-  "Declared_rejects_type_0_does_not_include_inferred_rejection_type_1_18069": "Declared rejects type '{0}' does not include inferred rejection type '{1}'."
+  "Declared_rejects_type_0_does_not_include_inferred_rejection_type_1_18069": "Declared rejects type '{0}' does not include inferred rejection type '{1}'.",
+  "Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verifie_18070": "Inferred thrown type is unknown (possible recursion or analysis limit); declared type cannot be verified.",
+  "Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_veri_18071": "Inferred rejection type is unknown (possible recursion or analysis limit); declared type cannot be verified."
 }
