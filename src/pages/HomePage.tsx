@@ -49,7 +49,7 @@ export function HomePage() {
         <div className="max-w-[1200px] mx-auto flex flex-wrap gap-6 md:gap-8 items-center justify-center">
           <div className="w-full text-center min-w-0 md:w-auto md:flex-[1_1_400px] md:max-w-[500px] md:text-left">
             <h1 className="text-2xl font-medium mb-4 leading-tight md:text-4xl">
-              ErrorScript is <strong className="font-extrabold">TypeScript with checked errors</strong>.
+              ErrorScript is <strong className="font-extrabold">TypeScript with Checked Exceptions</strong>.
             </h1>
             <p className="text-base opacity-95 mb-8 max-w-full md:text-xl md:max-w-[560px]">
               Inferred throw and reject effects with call-site enforcement. Catch unhandled throws
@@ -88,10 +88,12 @@ try { throwsError(); } catch (e) { ... }`}
       </section>
 
       <section className="bg-black text-white py-2 px-4 text-center text-sm">
-        ErrorScript is currently unavailable. Coming to an RFC near you soon!
+        ErrorScript is currently unavailable. <a className="underline" href="https://github.com/JamesDHW/ErrorScript/issues/2" target="_blank" rel="noreferrer">
+          Coming to an RFC near you soon!
+        </a>
       </section>
 
-      <section className="px-4 py-10 max-w-[1000px] mx-auto md:px-8 md:py-[4.5rem]">
+      <section className="px-4 py-10 max-w-[1200px] mx-auto md:px-8 md:py-[4.5rem]">
         <h2 className="text-center text-2xl font-normal mb-5 text-[#1a1a1a] md:text-4xl md:mb-8">
           What is ErrorScript?
         </h2>
@@ -166,7 +168,7 @@ try { throwsError(); } catch (e) { ... }`}
         </div>
       </section>
 
-      <section className="px-4 py-10 max-w-[1000px] mx-auto md:px-8 md:py-[4.5rem]">
+      <section className="px-4 py-10 max-w-[1200px] mx-auto md:px-8 md:py-[4.5rem]">
         <div className="flex flex-col gap-6 items-center min-w-0 md:flex-row md:gap-10 md:items-center">
           <div className="w-full min-w-0 max-w-full break-words text-center md:flex-[1_1_280px] md:max-w-[1000px] md:text-left">
             <h2 className="text-center text-2xl font-normal mb-5 text-[#1a1a1a] md:text-4xl md:mb-8">
@@ -273,6 +275,10 @@ function verify(result: Result) {
               <span className="font-semibold">ErrorScript</span>
             </div>
             <p className="m-0 text-sm opacity-90">Made with ❤️</p>
+            <p className="m-0 text-sm opacity-90">Author:{" "}
+              <a className="m-0 text-sm opacity-90 text-white underline" href="https://jameshw.dev" target="_blank" rel="noreferrer">JamesDHW</a>
+            </p>
+
           </div>
         </div>
       </footer>

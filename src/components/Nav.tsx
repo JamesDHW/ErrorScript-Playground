@@ -21,6 +21,9 @@ export function Nav() {
         <Link to="/about" className="text-white no-underline font-medium text-sm sm:text-base">
           About
         </Link>
+        <Link to="/docs" className="text-white no-underline font-medium text-sm sm:text-base">
+          Docs
+        </Link>
       </nav>
     </header>
   )
