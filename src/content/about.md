@@ -1,37 +1,282 @@
-# About ErrorScript
+# ErrorScript
 
-**ErrorScript** is a fork of TypeScript that adds inferred checked errors: the compiler tracks what can be thrown or rejected and requires call sites to handle or propagate those effects. This playground runs that fork in the browser so you can try the feature without installing anything.
+TypeScript helps us catch entire classes of bugs before our code ever runs.  
+But there’s one major category of runtime failure that remains mostly unchecked:
 
-The goal is to make exceptions and promise rejections part of the type system. Today, TypeScript gives us strong inference and static checks that prevent many runtime type errors, but there is no equivalent for exceptions. Functions can throw or reject without that fact appearing in their type, so callers have no static guarantee that they have handled failure. ErrorScript experiments with closing that gap via inference and optional `throws` / `rejects` clauses.
+**exceptions and promise rejections.**
 
-## Origin: the TypeScript Suggestion
+ErrorScript is an experiment exploring what it would look like if TypeScript treated thrown and rejected errors as first-class, statically checked effects.
 
-While checked exceptions exist in other languages as first-class (e.g. Java/ Swift), I found the idea of a `throws` clause and typed `catch` in TypeScript was proposed in [GitHub issue #13219](https://github.com/microsoft/TypeScript/issues/13219). The suggestion was closed as "not planned." The main reason was not disagreement with the goal, but **adoption**: adding checked exceptions to an existing language and ecosystem is a large change. Existing code does not declare what it throws; libraries and callers would need to opt in gradually. ErrorScript explores whether an *inferred*, opt-in design can make adoption feasible while still giving real safety where it is used.
+---
 
-## Compared to "errors as values"
+## The Problem in One Example
 
-Another way to get type-safe error handling is to avoid exceptions and model errors as values in the return type (e.g. `User | NotFoundError`). Projects like [Errore](https://errore.org/) advocate this style: functions return unions, callers narrow with `instanceof`, and the compiler enforces that you handle each error before using the success value. No wrappers, no exceptions—just unions.
+```ts
+function parseIntStrict(s: string) {
+  if (!/^-?\d+$/.test(s)) throw new Error("Not an int");
+  return Number(s);
+}
 
-That approach is solid and works with vanilla TypeScript. The limitation is that **exceptions are not first-class in the type system**. Code that throws or rejects does not advertise it in its signature. When you call a function that throws, or `await` a promise that may reject, the type checker cannot force you to handle the failure. You get unexpected throws and unhandled rejections at runtime. Errors-as-values fixes that for code you control by not using exceptions; it does not fix the millions of APIs and libraries that do throw or reject. ErrorScript aims to make those effects visible and enforced at compile time, so that both "return an error" and "throw/reject" can be checked.
+function demo() {
+  const n = parseIntStrict("x"); // might throw
+  return n;
+}
+```
 
-The two strategies can coexist: a library can declare `throws` for its exceptions while also returning union types for domain errors. ErrorScript is about giving exceptions and rejections the same kind of static checking we already have for other runtime behavior.
+In TypeScript today:
 
-## Incremental adoption
+- `parseIntStrict` may throw
+- `demo` silently propagates that possibility
+- There is no compiler signal that an exception was never handled
 
-The feature is designed so adoption can be gradual and opt-in:
+Even inside a `catch` block:
 
-- **Inference first.** You do not have to annotate every function. The compiler infers thrown/rejected types from the body. You only add `throws` or `rejects` at declaration sites when you need a contract (e.g. in `.d.ts` or at module boundaries).
-- **Disable if you want.** The rule can be turned off (e.g. via a compiler option). With the feature disabled, `throws` / `rejects` are ignored and the compiler behaves like standard TypeScript. No impact on teams that prefer not to use it.
-- **// @ts-expect-exception directive.** This can be used to ignore checked throws when the feature is enabled. This does not disable type checking on the next line, only exception checking.
+```ts
+try {
+  parseIntStrict("x");
+} catch (e) {
+  // e: unknown
+}
+```
 
-## Current Limitations
+The type of `e` is `unknown`.  
+There’s no built-in way to know what might have been thrown.
 
-This is a proof-of-concept. The current implementation has known gaps and trade-offs:
+---
 
-- **Recursion.** If the call graph has cycles, thrown type is reduced to `unknown` to avoid fixpoint analysis. So recursive or mutually recursive functions do not get precise checked effects yet.
-- **Promise combinators.** Only a subset of Promise patterns are modeled (e.g. `Promise.all` rejection typing). More complex flows may not be fully tracked.
-- **Playground vs. real compiler.** This site loads the ErrorScript build from your CDN. If you are using the stock playground assets, you may be running a snapshot that is behind the latest spec or has different behavior. The playground is for demonstration; for authoritative semantics see the fork and the spec.
+## What Is an Exception?
 
-The non-goals for the PoC are documented in the [spec](/docs). The idea is to evaluate ergonomics and viability, not to ship a complete production feature yet.
+An **error** is a failure condition.
 
-[Try the Playground](/playground) to see inferred checked errors in action, or read the project README for setup and more information.
+An **exception** is a control-flow mechanism: `throw` transfers execution non-locally until it reaches a `catch` (or crashes the program).
+
+In JavaScript:
+
+- Anything can be thrown
+- Exceptions can cross function and module boundaries
+- Async failures surface as Promise rejections
+
+Exceptions are powerful — but invisible to the type system.
+
+---
+
+## What TypeScript Did for JavaScript
+
+TypeScript added static type checking as a build-time safety net.
+
+It can tell you:
+
+- If you forgot to handle a union case
+- If you called a function incorrectly
+- If a value might be `undefined`
+
+But it does not check:
+
+- Whether a function might throw
+- Whether a rejection was handled
+- Whether your error handling is exhaustive
+
+There’s no equivalent of “strictNullChecks” for exceptions.
+
+---
+
+## How Errors Are Handled in TypeScript Today
+
+### 1. Exceptions (Status Quo)
+
+Pros:
+- Clean happy path
+- Idiomatic JavaScript
+- Minimal ceremony
+
+Cons:
+- Failure is invisible in the type system
+- Call sites must rely on documentation
+- `catch (e)` gives little type information
+
+In general, `throw` in your code is not safe, as it is easy to unintentionally forget to catch the resulting exception.
+
+---
+
+### 2. Errors as Values
+
+As TypeScript offers type checking, a common alternative is returning a `Result`-style type instead of throwing:
+
+```ts
+type Result<T, E> =
+  | { ok: true; value: T }
+  | { ok: false; error: E };
+
+function parseIntStrict(s: string): Result<number, string> {
+  if (!/^-?\d+$/.test(s)) return { ok: false, error: "Not an int" };
+  return { ok: true, value: Number(s) };
+}
+
+const result = parseIntStrict("x");
+
+if (!result.ok) {
+  console.error(result.error);
+}
+```
+
+This pattern is a natural consequence of `throw` being unsafe (❌) and type checking introducing type-safety (✅).
+
+Libraries like [ErrorE](https://errore.org/) explore this approach further and provide ergonomic helpers.
+
+This strategy is explicit and safe — but it pushes error handling directly into the happy path:
+
+- Every call site must check for errors and early return (or unwrap)
+- Failure plumbing spreads across the codebase
+- You often end up wrapping or transforming errors at each level
+
+It works well for domain logic, but it changes how you structure every function.
+
+---
+
+## Introducing Checked Exceptions
+
+Some languages (Java, Swift, Kotlin in limited form) allow functions to declare that they may throw certain error types.
+
+The compiler then enforces that:
+
+- Callers handle those errors, or
+- Propagate them explicitly
+
+The idea is simple:
+
+> Treat “may throw X” like a type-level effect that must be accounted for.
+
+---
+
+## What Is ErrorScript?
+
+ErrorScript is a TypeScript fork that experiments with this idea — while trying to feel as *TypeScript-native* as possible.
+
+It introduces:
+
+- Inferred thrown types
+- Inferred rejected types for async functions
+- Typed `catch (e)` variables
+- Compile-time errors for unhandled throws or rejections
+
+Example:
+
+```ts
+function parseIntStrict(s: string) {
+  if (!/^-?\d+$/.test(s)) throw new ParseError("Not an int");
+  return Number(s);
+}
+
+function computeUserId(raw: string): number throws ParseError {
+  return parseIntStrict(raw);
+}
+```
+
+At a call site:
+
+```ts
+// ❌ Unhandled thrown type: ParseError
+computeUserId("x"); 
+```
+
+You must either:
+
+```ts
+try {
+  computeUserId("x");
+} catch (e) {
+  if (e instanceof ParseError) {
+    // handle
+  }
+}
+```
+
+or propagate.
+
+---
+
+## Decoupling Error Handling from the Happy Path
+
+Unlike “errors as values”, ErrorScript does **not** require you to manually thread error checks through every function.
+
+Instead:
+
+- Functions can propagate errors naturally
+- Callers decide where handling boundaries live
+- The compiler ensures nothing is silently dropped
+
+This allows you to:
+
+- Keep happy-path logic clean
+- Define explicit error-handling boundaries
+- Avoid coupling domain logic to plumbing
+
+In other words:
+
+> Exceptions stay ergonomic, but become visible and enforced.
+
+---
+
+## Async Matters Too
+
+JavaScript failures are often asynchronous.
+
+ErrorScript treats promise rejections as typed effects:
+
+```ts
+async function fetchJson(): Promise<string> rejects NetworkError;
+
+// ❌ Unhandled promise rejection type: NetworkError
+await fetchJson(); 
+```
+
+You must:
+
+- `try/catch` the `await`, or
+- explicitly ignore with `void`, or
+- handle via `.catch(...)`
+
+---
+
+## Tradeoffs & Risks
+
+Typed exception systems have real costs:
+
+- Effect contracts can require maintenance
+- Ecosystem adoption is non-trivial
+- Library boundaries must declare thrown/rejected types
+- Migration strategy matters
+- This must be coordinated on the TypeScript roadmap
+- Some advocate against this type of separation of error-handling from the happy path
+
+Typed exceptions have been discussed in TypeScript before and marked as not planned due to adoption concerns:
+https://github.com/microsoft/TypeScript/issues/13219
+
+Introducing a new language feature in a mature ecosystem is significant.  
+Once widely adopted, it is difficult to reverse ⚠️
+
+ErrorScript exists as an experiment — not a mandate.
+
+---
+
+## Try It
+
+The goal is to explore:
+
+- Is this ergonomic in real code?
+- Does it reduce bugs?
+- Does it feel like TypeScript?
+- Where does it break down?
+
+You can:
+
+- Try the playground
+- Read the specification
+- Contribute to the RFC discussion  
+  https://github.com/JamesDHW/ErrorScript/issues/2
+
+Feedback, edge cases, and counterexamples are especially welcome – this project is here to spark discussion.
+
+---
+
+*ErrorScript is a research prototype exploring what first-class, statically checked exceptions could look like in TypeSc*
