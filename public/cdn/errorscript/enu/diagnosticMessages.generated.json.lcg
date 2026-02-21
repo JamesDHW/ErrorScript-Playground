@@ -981,12 +981,6 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
-            <Item ItemId=";Add_instanceof_narrowing_to_catch_block_95204" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[Add instanceof narrowing to catch block]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
             <Item ItemId=";Add_missing_attributes_95167" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add missing attributes]]></Val>
@@ -1101,12 +1095,6 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
-            <Item ItemId=";Add_rejects_clause_to_function_95203" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[Add rejects clause to function]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
             <Item ItemId=";Add_resolution_mode_import_attribute_95196" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add 'resolution-mode' import attribute]]></Val>
@@ -1134,12 +1122,6 @@
             <Item ItemId=";Add_satisfies_and_an_inline_type_assertion_with_0_90068" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add satisfies and an inline type assertion with '{0}']]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
-            <Item ItemId=";Add_throws_clause_to_function_95202" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[Add throws clause to function]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -1200,18 +1182,6 @@
             <Item ItemId=";Add_void_to_all_Promises_resolved_without_a_value_95144" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Add 'void' to all Promises resolved without a value]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
-            <Item ItemId=";Add_void_to_all_unhandled_promise_calls_in_file_95201" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[Add void to all unhandled promise calls in file]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
-            <Item ItemId=";Add_void_to_unhandled_promise_95200" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[Add void to unhandled promise]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -8079,6 +8049,12 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Rejects_clause_requires_a_Promise_like_return_type_18066" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Rejects clause requires a Promise-like return type.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Relative_import_paths_need_explicit_file_extensions_in_ECMAScript_imports_when_moduleResolution_is_n_2834" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Consider adding an extension to the import path.]]></Val>
@@ -10365,6 +10341,12 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Throws_clause_is_not_allowed_on_async_functions_18067" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Throws clause is not allowed on async functions.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";To_convert_this_file_to_an_ECMAScript_module_add_the_field_type_Colon_module_to_0_1482" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[To convert this file to an ECMAScript module, add the field `"type": "module"` to '{0}'.]]></Val>
@@ -11595,12 +11577,6 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
-            <Item ItemId=";Wrap_in_try_Slashcatch_with_type_narrowing_95205" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[Wrap in try/catch with type narrowing]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
             <Item ItemId=";Wrap_invalid_character_in_an_expression_container_95108" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Wrap invalid character in an expression container]]></Val>
@@ -12645,12 +12621,6 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
-            <Item ItemId=";rejects_clause_requires_a_Promise_like_return_type_18066" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[rejects clause requires a Promise-like return type.]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
             <Item ItemId=";require_call_may_be_converted_to_an_import_80005" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA['require' call may be converted to an import.]]></Val>
@@ -12774,12 +12744,6 @@
             <Item ItemId=";this_implicitly_has_type_any_because_it_does_not_have_a_type_annotation_2683" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA['this' implicitly has type 'any' because it does not have a type annotation.]]></Val>
-              </Str>
-              <Disp Icon="Str" />
-            </Item>
-            <Item ItemId=";throws_clause_is_not_allowed_on_a_Promise_like_return_type_18067" ItemType="0" PsrId="306" Leaf="true">
-              <Str Cat="Text">
-                <Val><![CDATA[throws clause is not allowed on a Promise-like return type.]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>

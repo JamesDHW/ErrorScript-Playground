@@ -22,6 +22,4 @@ import * as generateGetAccessorAndSetAccessor from "./ts.refactor.generateGetAcc
 export { generateGetAccessorAndSetAccessor };
 import * as inferFunctionReturnType from "./ts.refactor.inferFunctionReturnType.js";
 export { inferFunctionReturnType };
-export * from "../refactors/addInstanceofNarrowingToCatch.js";
-export * from "../refactors/inferFunctionThrowsType.js";
 //# sourceMappingURL=ts.refactor.d.ts.map
