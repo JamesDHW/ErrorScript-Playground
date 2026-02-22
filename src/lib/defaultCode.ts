@@ -1,7 +1,40 @@
 export const defaultCode = `/* =========================================================
-   ErrorScript / checkedThrows Goal Program (single file)
-   Paste into your editor and verify diagnostics / quick fixes.
+   ErrorScript / checkedThrows Example Program
+========================================================= */
 
+declare function throwsError(): void throws Error;
+throwsError(); // TS18063: Unhandled thrown type: Error.
+
+declare function asyncThrows(): Promise<void> rejects Error;
+asyncThrows(); // TS18064: Unhandled promise rejection type: Error.
+
+
+function assertNever(x: never): never {
+    throw new Error(\`Unreachable: \${ x }\`);
+}
+
+try {
+    throwsError();
+} catch (e) { 
+    if (e instanceof Error) {
+        /* e is correctly typed as Error! */
+    } else {
+        // Code never reaches here, so no error is thrown
+        assertNever(e);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
    Conventions:
    - "EXPECT ERROR" means your checker should report an error.
    - "EXPECT OK" means no diagnostic.
@@ -39,16 +72,12 @@ class StorageError extends Error {
     constructor(message: string) { super(message); }
 }
 
-function assertNever(x: never): never {
-    throw new Error(\`unreachable: \${ x }\`);
-}
-
 /* =========================================================
    1) Synchronous inference from throw + propagation
 ========================================================= */
 
 function parseIntStrict(s: string) {
-    if (!/^-?\d+$/.test(s)) throw new ParseError(\`Not an int: \${ s } \`);
+    if (!/^-?\\d+$/.test(s)) throw new ParseError(\`Not an int: \${ s } \`);
     const n = Number(s);
     if (!Number.isSafeInteger(n)) throw new RangeError(\`Out of range: \${ s } \`);
     return n;
