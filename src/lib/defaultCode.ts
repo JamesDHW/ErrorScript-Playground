@@ -1,5 +1,5 @@
 export const defaultCode = `/* =========================================================
-   ErrorScript / checkedThrows Example Program
+   ErrorScript / checkedErrors Example Program
 ========================================================= */
 
 declare function throwsError(): void throws Error;

@@ -1,128 +1,111 @@
-import React, { type CSSProperties } from 'react'
-import { Highlight, themes } from 'prism-react-renderer'
-import Prism from 'prismjs'
-import 'prismjs/components/prism-typescript'
-
-type HighlightPhrase = { text: string; style: CSSProperties }
-
-type CodeBlockProps = {
-  code: string
-  preClassName?: string
-  highlightPhrases?: HighlightPhrase[]
-}
+/* ---------- Code Block ---------- */
 
 export function CodeBlock({
-  code,
-  preClassName = 'bg-gray-100 rounded-lg px-5 py-4 font-mono text-[0.85rem] overflow-auto border border-black/10 m-0 whitespace-pre',
-  highlightPhrases = [],
-}: CodeBlockProps) {
+  snippet,
+  visible,
+}: {
+  snippet: { code: string; highlights: { line: number; type: "safe" | "unsafe" }[] };
+  visible: boolean;
+}) {
+  const lines = snippet.code.split("\n");
+
   return (
-    <Highlight theme={themes.vsLight} prism={Prism} code={code} language="typescript">
-      {({ className, style, tokens, getLineProps, getTokenProps }) => {
-        const normalizedCode = tokens
-          .map((line) => line.map((t) => t.content).join(''))
-          .join('\n')
-        const ranges =
-          highlightPhrases.length === 0
-            ? []
-            : highlightPhrases.flatMap(({ text, style }) => {
-                let start = 0
-                const result: Array<{ start: number; end: number; style: CSSProperties }> = []
-                while (true) {
-                  const i = normalizedCode.indexOf(text, start)
-                  if (i === -1) break
-                  result.push({ start: i, end: i + text.length, style })
-                  start = i + 1
-                }
-                return result
-              })
-        let charOffset = 0
-        return (
-          <div className="min-w-0 max-w-full overflow-hidden">
-            <pre
-              className={`${className} ${preClassName}`}
-              style={{
-                ...style,
-                margin: 0,
-                width: '100%',
-                minWidth: 0,
-                maxWidth: '100%',
-                boxSizing: 'border-box',
-                overflow: 'auto',
-              }}
-            >
-              <code className="whitespace-pre">
-                {tokens.map((line, lineIdx) => {
-                  const lineEl = (
-                    <div key={lineIdx} {...getLineProps({ line, key: lineIdx })}>
-                      {line.map((token, tokenIdx) => {
-                        const tokenStart = charOffset
-                        const tokenEnd = charOffset + token.content.length
-                        charOffset = tokenEnd
-                        const tokenProps = getTokenProps({ token, key: tokenIdx })
+    <div className={`transition-all duration-500 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}>
+      <div className="rounded-xl border border-black/30 bg-card overflow-hidden shadow-sm bg-white">
+        <div className="flex items-center gap-1.5 px-3 py-2 bg-muted/50 border-b border-black/30">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+        </div>
+        <pre className="p-3 md:p-4 text-[11px] md:text-[13px] font-mono leading-6 overflow-x-auto">
+          {lines.map((line, i) => {
+            const highlight = snippet.highlights.find((h) => h.line === i);
+            return (
+              <div
+                key={i}
+                className={`rounded-sm font-semibold transition-colors duration-500 ${highlight?.type === "unsafe"
+                  ? "bg-red-500/8 border-l-2 border-red-400/60 pl-2 -ml-0.5"
+                  : highlight?.type === "safe"
+                    ? "bg-emerald-500/8 border-l-2 border-emerald-400/60 pl-2 -ml-0.5"
+                    : "pl-3"
+                  }`}
+              >
+                <span className={`text-black/50 select-none mr-3 inline-block w-3 text-right text-[10px] ${highlight ? "ml-1" : ""}`}>
+                  {i + 1}
+                </span>
+                {tokenize(line).map((token, j) => (
+                  <span key={j} className={token.className}>
+                    {token.text}
+                  </span>
+                ))}
+              </div>
+            );
+          })}
+        </pre>
+      </div>
+    </div>
+  );
+}
 
-                        const overlapping = ranges.filter(
-                          (r) => r.start < tokenEnd && r.end > tokenStart
-                        )
-                        if (overlapping.length === 0) {
-                          return <span key={tokenIdx} {...tokenProps} />
-                        }
 
-                        const segments: Array<{
-                          start: number
-                          end: number
-                          style?: CSSProperties
-                        }> = []
-                        let pos = tokenStart
-                        for (const r of overlapping.sort((a, b) => a.start - b.start)) {
-                          const segStart = Math.max(pos, r.start)
-                          const segEnd = Math.min(tokenEnd, r.end)
-                          if (segStart > pos) {
-                            segments.push({ start: pos, end: segStart })
-                          }
-                          segments.push({ start: segStart, end: segEnd, style: r.style })
-                          pos = segEnd
-                        }
-                        if (pos < tokenEnd) {
-                          segments.push({ start: pos, end: tokenEnd })
-                        }
+/* ---------- Syntax highlighting (light theme) ---------- */
 
-                        return (
-                          <React.Fragment key={tokenIdx}>
-                            {segments.map((seg, i) => {
-                              const slice = token.content.slice(
-                                seg.start - tokenStart,
-                                seg.end - tokenStart
-                              )
-                              const spanProps = { ...tokenProps, children: slice }
-                              if (seg.style) {
-                                return (
-                                  <span
-                                    key={i}
-                                    {...spanProps}
-                                    style={{
-                                      ...(tokenProps.style as CSSProperties),
-                                      ...seg.style,
-                                      color: seg.style.color ?? '#c43333',
-                                    }}
-                                  />
-                                )
-                              }
-                              return <span key={i} {...spanProps} />
-                            })}
-                          </React.Fragment>
-                        )
-                      })}
-                    </div>
-                  )
-                  if (lineIdx < tokens.length - 1) charOffset += 1
-                  return lineEl
-                })}
-              </code>
-            </pre>
-          </div>
-        )
-      }}
-    </Highlight>
-  )
+function tokenize(line: string): { text: string; className: string }[] {
+  const result: { text: string; className: string }[] = [];
+  const keywords = ["function", "return", "const", "throws", "throw", "try", "catch", "async", "await", "new", "if"];
+  const types = ["User", "Data", "DbError", "SyntaxError", "string", "number", "void"];
+  let remaining = line;
+
+  while (remaining.length > 0) {
+    const commentMatch = remaining.match(/^(\/\/.*)$/);
+    if (commentMatch) {
+      result.push({ text: commentMatch[1], className: "text-[#8b8fa3]" });
+      remaining = remaining.slice(commentMatch[1].length);
+      continue;
+    }
+
+    const stringMatch = remaining.match(/^("[^"]*"|'[^']*')/);
+    if (stringMatch) {
+      result.push({ text: stringMatch[1], className: "text-[#b35e14]" });
+      remaining = remaining.slice(stringMatch[1].length);
+      continue;
+    }
+
+    let foundKeyword = false;
+    for (const kw of keywords) {
+      if (remaining.startsWith(kw) && (remaining.length === kw.length || /\W/.test(remaining[kw.length]))) {
+        result.push({
+          text: kw,
+          className: kw === "throws" ? "text-[#c0392b] font-semibold" : "text-[#4060c0]",
+        });
+        remaining = remaining.slice(kw.length);
+        foundKeyword = true;
+        break;
+      }
+    }
+    if (foundKeyword) continue;
+
+    let foundType = false;
+    for (const t of types) {
+      if (remaining.startsWith(t) && (remaining.length === t.length || /\W/.test(remaining[t.length]))) {
+        result.push({ text: t, className: "text-[#1a7a5a]" });
+        remaining = remaining.slice(t.length);
+        foundType = true;
+        break;
+      }
+    }
+    if (foundType) continue;
+
+    const funcMatch = remaining.match(/^(\w+)(\()/);
+    if (funcMatch) {
+      result.push({ text: funcMatch[1], className: "text-[#8a6b20]" });
+      remaining = remaining.slice(funcMatch[1].length);
+      continue;
+    }
+
+    result.push({ text: remaining[0], className: "text-[#343746]" });
+    remaining = remaining.slice(1);
+  }
+
+  return result;
 }

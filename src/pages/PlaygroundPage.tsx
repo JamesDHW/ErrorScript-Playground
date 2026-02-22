@@ -159,7 +159,7 @@ export function PlaygroundPage() {
       strict,
       jsx,
       noEmit: false,
-      checkedThrows: true,
+      checkedErrors: true,
     }
 
     loadSandbox({
@@ -199,7 +199,7 @@ export function PlaygroundPage() {
 
   useEffect(() => {
     if (!sandbox) return
-    sandbox.setCompilerSettings({ target, module: moduleKind, strict, jsx, checkedThrows: true })
+    sandbox.setCompilerSettings({ target, module: moduleKind, strict, jsx, checkedErrors: true })
     refreshOutputs(sandbox)
   }, [sandbox, target, moduleKind, strict, jsx, refreshOutputs])
 
@@ -224,7 +224,7 @@ export function PlaygroundPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-52px)] bg-[#1e1e1e] min-h-0">
+    <div className="flex flex-col h-[calc(100vh-30px)] bg-[#1e1e1e] min-h-0">
       <div className="py-2 px-3 bg-[#2d2d2d] border-b border-white/10 flex items-center gap-2 flex-wrap md:px-4 md:gap-4">
         <span className="font-semibold text-white/90 text-sm md:text-base">Playground</span>
         <span className="text-white/70 text-sm md:text-base">ErrorScript</span>
@@ -294,8 +294,8 @@ export function PlaygroundPage() {
         </pre>
       )}
       <div className="flex-1 flex flex-col min-h-0 md:flex-row">
-        <div id="monaco-editor-embed" className="flex-1 min-w-0 min-h-[200px] md:min-h-0" />
-        <div className="w-full flex-shrink-0 flex flex-col border-t border-white/10 min-h-[180px] md:w-1/2 md:min-w-[300px] md:border-t-0 md:border-l md:min-h-0">
+        <div id="monaco-editor-embed" className="flex-1 min-w-0 min-h-0" />
+        <div className="w-full flex-shrink-0 md:visible invisible  flex flex-col border-t border-white/10 md:w-1/2 md:min-w-[300px] md:border-t-0 md:border-l">
           <div className="flex gap-0 border-b border-white/10 px-2">
             {(['JS', 'DTS', 'Errors'] as const).map((tab) => (
               <button

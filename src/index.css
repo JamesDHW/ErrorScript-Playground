@@ -2,11 +2,13 @@
 
 @theme {
   --color-brand: #c43333;
+  --color-js: #F7DF20;
+  --color-ts: #3178c6;
 }
 
 @layer base {
   :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: system-ui, Avenir,   Helvetica, Arial, sans-serif;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

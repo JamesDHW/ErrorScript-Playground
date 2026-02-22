@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@typescript/sandbox": "^0.1.10",
+    "lucide-react": "^0.575.0",
     "monaco-editor": "^0.52.0",
     "prism-react-renderer": "^2.4.1",
     "prismjs": "^1.30.0",

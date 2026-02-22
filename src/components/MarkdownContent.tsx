@@ -45,7 +45,7 @@ export const baseMarkdownComponents: Components = {
     if (isFenced) {
       return (
         <div data-spec-fenced className="my-4">
-          <CodeBlock code={code.trim()} />
+          <CodeBlock snippet={{ code: code.trim(), highlights: [] }} visible />
         </div>
       )
     }
@@ -68,7 +68,8 @@ type MarkdownContentProps = {
   componentOverrides?: Partial<Components>
 }
 
-export function MarkdownContent({ content, componentOverrides = {} }: MarkdownContentProps) {
+export function 
+MarkdownContent({ content, componentOverrides = {} }: MarkdownContentProps) {
   return (
     <ReactMarkdown components={{ ...baseMarkdownComponents, ...componentOverrides }}>
       {content}

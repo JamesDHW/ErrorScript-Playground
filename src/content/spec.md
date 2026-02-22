@@ -296,9 +296,13 @@ JSON.parse("{"); // TS18063 Unhandled thrown type: SyntaxError
 
 ## 6. Call-site Enforcement Rules
 
+Propagation is valid when the callee effect is assignable to the enclosing function’s effect on the corresponding channel (reject/throw).
+
 ### 6.1 Synchronous: TS18063
 
-A sync throw is **handled** iff the call/expression node is syntactically contained within the tryBlock of a try statement that has a catchClause.
+A sync throw is **handled** if the call/expression node is syntactically contained within the tryBlock of a try statement that has a catchClause. 
+
+Inside a function body, a potentially-throwing expression may appear outside a handler provided its thrown effect is included in the enclosing function’s declared or inferred throws effect (i.e. it is propagated).
 
 A call/expression that may throw type E triggers TS18063 unless it is:
 
@@ -317,6 +321,8 @@ boom2(); // TS18063
 ### 6.2 Async: TS18064
 
 When awaiting an expression P, both Throws(P) (call-time) and Rejects(P) (await-time) are subject to enforcement; unhandled call-time throws can trigger TS18063 and unhandled await-time rejects trigger TS18064.
+
+Inside a function body, a promise rejection may be left unhandled at that site provided its rejection effect is included in the enclosing function’s declared or inferred rejects effect (i.e. it is propagated).
 
 A Promise-like expression with reject type E triggers TS18064 if:
 
