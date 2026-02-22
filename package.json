@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "fetch-latest-errorscript": "cp -R ../ErrorScript/built/local/ public/cdn/errorscript/"
+    "fetch-latest-errorscript": "pnpm run fetch-latest-sourcecode && pnpm run fetch-latest-release",
+    "fetch-latest-sourcecode": "cp -R ../ErrorScript/built/local/ public/cdn/errorscript/",
+    "fetch-latest-release": "cp ../ErrorScript/typescript-6.0.0-errorscript.tgz public/cdn/errorscript-latest.tgz"
   },
   "dependencies": {
     "@typescript/sandbox": "^0.1.10",

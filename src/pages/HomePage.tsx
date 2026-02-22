@@ -2,7 +2,7 @@ import React from 'react'
 import { CodeBlock } from '../components/CodeBlock'
 import { ChannelIllustration } from '../components/ChannelIllustration'
 
-const GITHUB_URL = 'https://github.com/JamesDHW/ErrorScript-Playground'
+const GITHUB_URL = 'https://github.com/JamesDHW/ErrorScript/issues/2'
 
 type GetStartedCardProps = {
   href: string
@@ -220,11 +220,11 @@ function start() {
         </div>
       </section>
 
-      <section className="px-4 py-10 max-w-[1000px] mx-auto md:px-8 md:py-[4.5rem]">
+      <section className="px-4 py-10 max-w-[1200px] mx-auto md:px-8 md:py-[4.5rem]">
         <h2 className="text-center text-2xl font-normal mb-5 text-[#1a1a1a] md:text-4xl md:mb-8">
           Get Started
         </h2>
-        <div className="grid grid-cols-1 gap-6 mx-auto md:grid-cols-2 md:gap-8 md:max-w-[560px]">
+        <div className="grid grid-cols-1 gap-6 mx-auto md:grid-cols-3 md:gap-8">
           <GetStartedCard
             href="/playground"
             title="Playground"
@@ -233,9 +233,14 @@ function start() {
           </GetStartedCard>
           <GetStartedCard
             href={GITHUB_URL}
-            title="Download"
-            description="View on GitHub"
+            title="Support the RFC"
+            description="Star on GitHub"
             external
+          />
+          <GetStartedCard
+            href="/cdn/errorscript-latest.tgz"
+            title="Download"
+            description="Get the latest release as a .tgz"
           />
         </div>
       </section>
