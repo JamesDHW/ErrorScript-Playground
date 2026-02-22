@@ -1,19 +1,25 @@
 # ErrorScript
 
-TypeScript helps us catch entire classes of bugs before our code ever runs.  
-But there’s one major category of runtime failure that remains mostly unchecked:
+JavaScript has two channels of control flow to return a result: `return` and `throw`.
 
-**exceptions and promise rejections.**
+In JavaScript, neither is "safe" to use:
 
-ErrorScript is an experiment exploring what it would look like if TypeScript treated thrown and rejected errors as first-class, statically checked effects.
+```js
+const name = getName(); // <- typeof name could be number ⚠️
+await safeMethod();     // <- safeMethod might throw ⚠️
+```
+
+TypeScript was introduced to make the `return` control flow safe by adding type-checking, but it does not do anything to make the `throw` clause safe to use. As with JavaScript, TypeScript provides no mechanism to know if the program will throw a run-time exception before the program runs.
+
+ErrorScript is an experiment exploring what it would look like if TypeScript treated thrown and rejected errors as first-class, statically checked effects to make the `throw` keyword safe to use.
 
 ---
 
-## The Problem in One Example
+## The Problem
 
 ```ts
 function parseIntStrict(s: string) {
-  if (!/^-?\d+$/.test(s)) throw new Error("Not an int");
+  if (!/^-?\d+$/.test(s)) throw new ParseError("Not an int");
   return Number(s);
 }
 
@@ -44,7 +50,7 @@ There’s no built-in way to know what might have been thrown.
 
 ---
 
-## What Is an Exception?
+## Errors vs Exceptions
 
 An **error** is a failure condition.
 
@@ -80,9 +86,9 @@ There’s no equivalent of “strictNullChecks” for exceptions.
 
 ---
 
-## How Errors Are Handled in TypeScript Today
+## Error Handling Approaches in TypeScript Today
 
-### 1. Exceptions (Status Quo)
+### 1. Exceptions (Not Recommended)
 
 Pros:
 - Clean happy path
@@ -92,7 +98,7 @@ Pros:
 Cons:
 - Failure is invisible in the type system
 - Call sites must rely on documentation
-- `catch (e)` gives little type information
+- `catch (e)` gives no type information
 
 In general, `throw` in your code is not safe, as it is easy to unintentionally forget to catch the resulting exception.
 
@@ -100,26 +106,24 @@ In general, `throw` in your code is not safe, as it is easy to unintentionally f
 
 ### 2. Errors as Values
 
-As TypeScript offers type checking, a common alternative is returning a `Result`-style type instead of throwing:
+As TypeScript offers type checking, returning an error instead of throwing is preferable.
 
 ```ts
-type Result<T, E> =
-  | { ok: true; value: T }
-  | { ok: false; error: E };
-
-function parseIntStrict(s: string): Result<number, string> {
-  if (!/^-?\d+$/.test(s)) return { ok: false, error: "Not an int" };
-  return { ok: true, value: Number(s) };
+function parseIntStrict(s: string): ParseError | Number {
+  if (!/^-?\d+$/.test(s)) return new Error("Not an int");
+  return Number(s);
 }
 
 const result = parseIntStrict("x");
 
-if (!result.ok) {
+if (result instanceof ParseError) {
   console.error(result.error);
 }
 ```
 
-This pattern is a natural consequence of `throw` being unsafe (❌) and type checking introducing type-safety (✅).
+This pattern is a natural consequence of `throw` being unsafe and type checking introducing type-safety.
+
+A common alternative is returning a `Result<Val, Err>`-style type.
 
 Libraries like [ErrorE](https://errore.org/) explore this approach further and provide ergonomic helpers.
 
@@ -146,17 +150,19 @@ The idea is simple:
 
 > Treat “may throw X” like a type-level effect that must be accounted for.
 
+This makes it clear at _build-time_ which errors need handling where, making the `throw` keyword safe to use without crashing the program.
+
 ---
 
 ## What Is ErrorScript?
 
-ErrorScript is a TypeScript fork that experiments with this idea — while trying to feel as *TypeScript-native* as possible.
+ErrorScript is a fork of TypeScript that experiments with this idea — while trying to feel as "TypeScript-native" as possible.
 
 It introduces:
 
 - Inferred thrown types
 - Inferred rejected types for async functions
-- Typed `catch (e)` variables
+- Typed `catch (e)` and `.catch((e) => {})` variables
 - Compile-time errors for unhandled throws or rejections
 
 Example:
@@ -191,7 +197,7 @@ try {
 }
 ```
 
-or propagate.
+or allow it to propagate and handle in any callers.
 
 ---
 
@@ -236,6 +242,16 @@ You must:
 - explicitly ignore with `void`, or
 - handle via `.catch(...)`
 
+## Extension of TypeScript
+
+In order to help adoption, ErrorScript is designed to extend TypeScript as a superset, such that all valid TypeScript is valid ErrorScript – no new syntax which contradicts existing standards is introduced. All previous error handling patterns are still available and is down to the decision of the consumer of TypeScript how to use, checked exceptions only add more safety on top.
+
+The feature can be activated/ deactivated with the compiler option `checkedThrows`, so existing codebases can ignore the new rule if desired and keep unsafe exceptions unhandled.
+
+A new directive `// @ts-ignore-exception`, which only ignores `checkedThrows`, allows for any unhandled call sites in existing code to be ignored in existing projects which.
+
+New code fixes (including wrap with try/catch) have been added to help refactoring towards safe exception handling.
+
 ---
 
 ## Tradeoffs & Risks
@@ -245,17 +261,14 @@ Typed exception systems have real costs:
 - Effect contracts can require maintenance
 - Ecosystem adoption is non-trivial
 - Library boundaries must declare thrown/rejected types
-- Migration strategy matters
-- This must be coordinated on the TypeScript roadmap
-- Some advocate against this type of separation of error-handling from the happy path
+- Performance of TypeScript will be affected – even if `checkedThrows` is disabled
+- This must be coordinated on the TypeScript roadmap (e.g. `go` migration)
 
 Typed exceptions have been discussed in TypeScript before and marked as not planned due to adoption concerns:
 https://github.com/microsoft/TypeScript/issues/13219
 
 Introducing a new language feature in a mature ecosystem is significant.  
 Once widely adopted, it is difficult to reverse ⚠️
-
-ErrorScript exists as an experiment — not a mandate.
 
 ---
 
@@ -270,13 +283,12 @@ The goal is to explore:
 
 You can:
 
-- Try the playground
-- Read the specification
-- Contribute to the RFC discussion  
-  https://github.com/JamesDHW/ErrorScript/issues/2
+- [Try the playground](https://errorscript.vercel.app/playground)
+- [Read the specification](https://errorscript.vercel.app/docs)
+- [Contribute to the RFC discussion](https://github.com/JamesDHW/ErrorScript/issues/2)
 
 Feedback, edge cases, and counterexamples are especially welcome – this project is here to spark discussion.
 
 ---
 
-*ErrorScript is a research prototype exploring what first-class, statically checked exceptions could look like in TypeSc*
+*ErrorScript is a research prototype exploring what first-class, statically checked exceptions could look like in TypeScript*
