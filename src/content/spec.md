@@ -81,7 +81,9 @@ async function boom() { throw new Error("x"); } // rejects Error
 
 #### 3.2.2 Awaited rejection must be handled/propagated
 
-If await expr awaits a Promise-like with rejection type E, then the await site must be handled or propagated.
+When awaiting an expression P, enforcement applies to **Throws(P)** (at evaluation/call time) and **Rejects(P)** (at await time). Both must be handled or propagated. In an async function, both ultimately contribute to the enclosing function's rejection effect when propagated.
+
+So: if await expr awaits a Promise-like with rejection type E, or if expr can throw at call time, the await site must handle or propagate those effects.
 
 Baseline: checkedThrowsAsync
 
@@ -122,11 +124,11 @@ async function wrapperPropagation() {
 
 #### 3.3.1 try/catch absorbs throws from try block
 
-A try { ... } catch { ... } is considered a handler boundary for try-block effects.
-
-- Effects from the try block do not escape the try statement if a catch is present.
+- **catch** absorbs **throws** from the try block: thrown effects from the try block do not escape the try statement when a catch clause is present.
+- **catch does not absorb rejects** from non-awaited promises created in the try block; those rejections are unaffected by try/catch.
+- **.catch(...)** on a promise value absorbs rejects on that specific promise.
 - Effects thrown from the catch block do escape normally.
-- finally always contributes to escaping effects.
+- **finally** always contributes to escaping effects.
 
 Baseline: checkedThrowsFinally
 
@@ -139,7 +141,11 @@ withFinally(); // TS18063 Unhandled thrown type: "finally"
 
 #### 3.3.2 Catch variable typing (sync+async)
 
-The catch variable (e.g. catch (e)) is typed as the union of all thrown/rejected types that can arise from the corresponding try block.
+**TypeOf(e) = Throws(tryBlock)**
+
+The catch variable (e.g. catch (e)) is typed from **throws only** in the try block. Rejections appear in the catch variable **only when they become throws via await** in the try block: at an await site, a rejection manifests as a throw, so it is part of Throws(tryBlock).
+
+Additionally, **await expr** contributes **Throws(expr) ∪ Rejects(expr)** to Throws(tryBlock) (because await-time rejection manifests as a throw at the await point). So the catch variable is the union of all synchronous throws in the try block plus, for each await expr, Throws(expr) and Rejects(expr).
 
 Baseline: checkedThrowsAsyncCatchVariable
 
@@ -159,7 +165,7 @@ In a handler:
 try {
   const c = await loadConfig(true);
 } catch (e) {
-  // e is NetworkError | StorageError | ParseError | SyntaxError (from call chain)
+  // e is Throws(tryBlock): sync throws + (for each await in try) Throws(expr) ∪ Rejects(expr)
 }
 ```
 
@@ -221,13 +227,15 @@ declare function badRejects(): number rejects Error;
 // TS18066: rejects clause requires a Promise-like return type.
 ```
 
-#### 4.2.2 throws clause is not allowed on Promise-like return type
+#### 4.2.2 throws clause is not allowed on async functions
+
+**throws** is forbidden only on **async** functions. **throws** is allowed on non-async Promise-returning functions and may co-exist with **rejects** (e.g. a non-async function that returns Promise\<T\> may declare both throws E1 and rejects E2).
 
 Baseline: checkedThrowsDeclared
 
 ```typescript
-declare function badThrows(): Promise<number> throws Error;
-// TS18067: throws clause is not allowed on a Promise-like return type.
+async function illegalAsyncThrows(): Promise<void> throws Error { ... }
+// TS18067: throws clause is not allowed on async functions.
 ```
 
 ### 4.3 Declaration-site effects are authoritative at call sites
@@ -274,6 +282,8 @@ async function unhandledOverload() {
 
 ## 5. Standard library modelling (observed)
 
+Stdlib throw/reject annotations are provided via a **curated compiler-internal mapping**, since .d.ts declarations have no bodies and cannot infer effects.
+
 ### 5.1 JSON.parse is modelled as throwing SyntaxError
 
 Baseline: checkedThrowsAsync
@@ -288,9 +298,11 @@ JSON.parse("{"); // TS18063 Unhandled thrown type: SyntaxError
 
 ### 6.1 Synchronous: TS18063
 
+A sync throw is **handled** iff the call/expression node is syntactically contained within the tryBlock of a try statement that has a catchClause.
+
 A call/expression that may throw type E triggers TS18063 unless it is:
 
-- inside a try with a catch, or
+- inside a try with a catch (i.e. handled as above), or
 - within a function where the effect is allowed to propagate (via inference or explicit throws), or
 - suppressed by // @ts-expect-exception, or
 - otherwise handled (implementation-defined beyond try/catch; e.g. no other sync handlers are asserted)
@@ -303,6 +315,8 @@ boom2(); // TS18063
 ```
 
 ### 6.2 Async: TS18064
+
+When awaiting an expression P, both Throws(P) (call-time) and Rejects(P) (await-time) are subject to enforcement; unhandled call-time throws can trigger TS18063 and unhandled await-time rejects trigger TS18064.
 
 A Promise-like expression with reject type E triggers TS18064 if:
 
@@ -366,7 +380,9 @@ async function ignoreThrowsDoesNotSuppressTypeError() {
 
 // @ts-ignore suppresses all errors on the next line (standard TS behaviour), including checkedThrows diagnostics.
 
-## 8. Quick Fixes and Code Actions (current)
+## 8. Quick Fixes and Code Actions (non-normative tooling)
+
+*This section describes editor/tooling behaviour; it is non-normative and cannot be used to argue type-system or enforcement semantics.*
 
 The following quick fixes are evidenced directly in baselines as suggested fix lines printed beneath diagnostics.
 
