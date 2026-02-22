@@ -74,13 +74,42 @@ export function HomePage() {
           </div>
           <div className="w-full min-w-0 md:flex-[1_1_400px]">
             <CodeBlock
-              code={`// Unhandled throw → compile error
-function throwsError(): number { throw new Error("e"); }
-throwsError();
-// TS18063: Unhandled thrown type: Error.
+              highlightPhrases={[
+                {
+                  text: 'throws Error;',
+                  style: { backgroundColor: 'rgba(0, 255, 0, 0.3)', color: 'blue', fontWeight: 'bold' },
+                },
+                {
+                  text: 'rejects Error;',
+                  style: { backgroundColor: 'rgba(0, 255, 0, 0.3)', color: 'blue', fontWeight: 'bold' },
+                },
+                {
+                  text: '\nthrowsError();',
+                  style: { textDecoration: 'underline', textDecorationStyle: 'wavy', fontWeight: 'bold' },
+                },
+                {
+                  text: '\nasyncThrows();',
+                  style: { textDecoration: 'underline', textDecorationStyle: 'wavy', fontWeight: 'bold' },
+                },
+                {
+                  text: '(e: Error)',
+                  style: { backgroundColor: 'rgba(0, 255, 0, 0.3)', color: 'blue', fontWeight: 'bold' },
+                },
+                {
+                  text: '/* e is correctly typed as Error! */',
+                  style: { backgroundColor: 'rgba(0, 255, 0, 0.3)', color: 'blue', fontWeight: 'bold' },
+                },
+              ]}
+              code={`
+declare function throwsError(): void throws Error;
+throwsError(); // TS18063: Unhandled thrown type: Error.
 
-// Handled by try/catch
-try { throwsError(); } catch (e) { ... }`}
+declare async function asyncThrows(): Promise<void> rejects Error;
+asyncThrows(); // TS18064: Unhandled promise rejection type: Error.
+
+try { throwsError(); } 
+catch (e: Error) { /* e is correctly typed as Error! */ }
+`}
               preClassName={`${codeBlockPreClass} text-[0.75rem] p-4 md:text-[0.9rem] md:p-6`}
             />
           </div>
