@@ -1,8 +1,8 @@
-# ErrorScript checkedThrows Spec
+# ErrorScript checkedErrors Spec
 
 ## 1. Overview
 
-checkedThrows introduces checked error semantics to TypeScript by tracking effects:
+checkedErrors introduces checked error semantics to TypeScript by tracking effects:
 
 - Thrown effects for synchronous code (throws)
 - Rejected effects for Promise-like/async code (rejects)
@@ -11,7 +11,7 @@ The compiler enforces that any potentially thrown/rejected effect at a call site
 
 - Handled locally (e.g. try/catch, .catch(...), void), or
 - Propagated outward to an enclosing function's effect (implicitly, via inference), or
-- Suppressed by a directive that targets only checkedThrows diagnostics (// @ts-expect-exception)
+- Suppressed by a directive that targets only checkedErrors diagnostics (// @ts-expect-exception)
 
 Two new diagnostics are introduced:
 
@@ -22,7 +22,7 @@ Two new diagnostics are introduced:
 
 ### 2.1 Compiler option
 
-A compiler option named checkedThrows exists (boolean).
+A compiler option named checkedErrors exists (boolean).
 
 When enabled, the checker emits TS18063/TS18064.
 
@@ -59,7 +59,7 @@ function b() { throw 123; }        // throws 123
 
 If a function body calls another function that can throw, the caller is inferred to throw the callee's thrown type.
 
-Baseline: checkedThrowsPropagation
+Baseline: checkedErrorsPropagation
 
 ```typescript
 function inner() { throw 123; }
@@ -73,7 +73,7 @@ outer(); // TS18063 Unhandled thrown type: 123
 
 Any throw inside an async function contributes to that function's rejection type.
 
-Baseline: checkedThrowsAsync
+Baseline: checkedErrorsAsync
 
 ```typescript
 async function boom() { throw new Error("x"); } // rejects Error
@@ -85,7 +85,7 @@ When awaiting an expression P, enforcement applies to **Throws(P)** (at evaluati
 
 So: if await expr awaits a Promise-like with rejection type E, or if expr can throw at call time, the await site must handle or propagate those effects.
 
-Baseline: checkedThrowsAsync
+Baseline: checkedErrorsAsync
 
 ```typescript
 async function awaitRequiresHandling() {
@@ -97,7 +97,7 @@ async function awaitRequiresHandling() {
 
 Calling a Promise-returning/rejecting function without awaiting/handling is an error (stance 2).
 
-Baseline: checkedThrowsAsync
+Baseline: checkedErrorsAsync
 
 ```typescript
 function fireAndForget() {
@@ -111,7 +111,7 @@ function fireAndForget() {
 
 Returning a Promise from a non-async function propagates the rejection effect to callers who await it.
 
-Baseline: checkedThrowsAsync
+Baseline: checkedErrorsAsync
 
 ```typescript
 function wrap() { return boom(); } // wrap returns Promise that rejects Error
@@ -130,7 +130,7 @@ async function wrapperPropagation() {
 - Effects thrown from the catch block do escape normally.
 - **finally** always contributes to escaping effects.
 
-Baseline: checkedThrowsFinally
+Baseline: checkedErrorsFinally
 
 ```typescript
 function withFinally() {
@@ -147,7 +147,7 @@ The catch variable (e.g. catch (e)) is typed from **throws only** in the try blo
 
 Additionally, **await expr** contributes **Throws(expr) ∪ Rejects(expr)** to Throws(tryBlock) (because await-time rejection manifests as a throw at the await point). So the catch variable is the union of all synchronous throws in the try block plus, for each await expr, Throws(expr) and Rejects(expr).
 
-Baseline: checkedThrowsAsyncCatchVariable
+Baseline: checkedErrorsAsyncCatchVariable
 
 ```typescript
 async function loadConfig(remote: boolean) {
@@ -173,7 +173,7 @@ try {
 
 throw e inside catch contributes the type of e to the enclosing function's effect (throw/reject depending on sync/async context).
 
-Baseline: checkedThrowsRethrow
+Baseline: checkedErrorsRethrow
 
 ```typescript
 function c() {
@@ -186,7 +186,7 @@ c(); // TS18063 Unhandled thrown type: Error
 
 If a function is part of a cycle (direct or indirect recursion), its inferred thrown/rejected type becomes unknown.
 
-Baseline: checkedThrowsRecursion
+Baseline: checkedErrorsRecursion
 
 ```typescript
 function r1() { r2(); }
@@ -220,7 +220,7 @@ async function h(): Promise<void> rejects NetworkError { ... }
 
 #### 4.2.1 rejects clause requires Promise-like return type
 
-Baseline: checkedThrowsDeclared
+Baseline: checkedErrorsDeclared
 
 ```typescript
 declare function badRejects(): number rejects Error;
@@ -231,7 +231,7 @@ declare function badRejects(): number rejects Error;
 
 **throws** is forbidden only on **async** functions. **throws** is allowed on non-async Promise-returning functions and may co-exist with **rejects** (e.g. a non-async function that returns Promise\<T\> may declare both throws E1 and rejects E2).
 
-Baseline: checkedThrowsDeclared
+Baseline: checkedErrorsDeclared
 
 ```typescript
 async function illegalAsyncThrows(): Promise<void> throws Error { ... }
@@ -242,7 +242,7 @@ async function illegalAsyncThrows(): Promise<void> throws Error { ... }
 
 A .d.ts declaration with throws/rejects affects call-site enforcement exactly like an inferred effect.
 
-Baseline: checkedThrowsDeclared
+Baseline: checkedErrorsDeclared
 
 ```typescript
 declare function f(): number throws RangeError;
@@ -253,7 +253,7 @@ f(); // TS18063 Unhandled thrown type: RangeError
 
 If a function body throws a type not assignable to the declared clause, it is an error.
 
-Baseline: checkedThrowsDeclared (two cases implied by your example + baseline intent)
+Baseline: checkedErrorsDeclared (two cases implied by your example + baseline intent)
 
 ```typescript
 function implThrowsStricter(): number throws Error {
@@ -269,7 +269,7 @@ function implThrowsNarrower(): number throws RangeError {
 
 Overload signatures may declare different effects (including mixing throws and rejects across overloads), and call sites use the selected overload's effect.
 
-Baseline: checkedThrowsDeclared
+Baseline: checkedErrorsDeclared
 
 ```typescript
 declare function overload(x: string): number throws Error;
@@ -286,7 +286,7 @@ Stdlib throw/reject annotations are provided via a **curated compiler-internal m
 
 ### 5.1 JSON.parse is modelled as throwing SyntaxError
 
-Baseline: checkedThrowsAsync
+Baseline: checkedErrorsAsync
 
 ```typescript
 JSON.parse("{"); // TS18063 Unhandled thrown type: SyntaxError
@@ -333,7 +333,7 @@ boom().catch(() => {}); // ok
 
 ### 6.3 Promise combinators (current coverage)
 
-Baseline: checkedThrowsCombinators
+Baseline: checkedErrorsCombinators
 
 - Promise.race([p1, p2]) rejects with E1 | E2
 - Promise.any([p1, p2]) rejects with E1 | E2
@@ -360,7 +360,7 @@ A comment directive // @ts-expect-exception suppresses only:
 
 It does not suppress unrelated type errors.
 
-Baseline: checkedThrowsIgnoreDirective
+Baseline: checkedErrorsIgnoreDirective
 
 ```typescript
 async function fail() { throw new Error("x"); }
@@ -378,7 +378,7 @@ async function ignoreThrowsDoesNotSuppressTypeError() {
 
 ### 7.2 Contrast with // @ts-ignore
 
-// @ts-ignore suppresses all errors on the next line (standard TS behaviour), including checkedThrows diagnostics.
+// @ts-ignore suppresses all errors on the next line (standard TS behaviour), including checkedErrors diagnostics.
 
 ## 8. Quick Fixes and Code Actions (non-normative tooling)
 
@@ -396,7 +396,7 @@ Suggested fix:
 void g();
 ```
 
-Baseline: checkedThrowsDeclared
+Baseline: checkedErrorsDeclared
 
 ```typescript
 function fireAndForgetDeclared() {
@@ -414,7 +414,7 @@ Suggested fix:
 g().catch(() => {});
 ```
 
-Baseline: checkedThrowsDeclared, checkedThrowsAsync
+Baseline: checkedErrorsDeclared, checkedErrorsAsync
 
 ```typescript
 boom().catch(() => {});

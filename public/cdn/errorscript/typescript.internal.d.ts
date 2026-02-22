@@ -13663,7 +13663,7 @@ declare namespace ts {
         /** @deprecated */
         charset?: string;
         checkJs?: boolean;
-        checkedThrows?: boolean;
+        checkedErrors?: boolean;
         /** @internal */ configFilePath?: string;
         /**
          * configFile is set as non enumerable property so as to avoid checking of json source files

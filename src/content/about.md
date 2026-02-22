@@ -246,9 +246,9 @@ You must:
 
 In order to help adoption, ErrorScript is designed to extend TypeScript as a superset, such that all valid TypeScript is valid ErrorScript – no new syntax which contradicts existing standards is introduced. All previous error handling patterns are still available and is down to the decision of the consumer of TypeScript how to use, checked exceptions only add more safety on top.
 
-The feature can be activated/ deactivated with the compiler option `checkedThrows`, so existing codebases can ignore the new rule if desired and keep unsafe exceptions unhandled.
+The feature can be activated/ deactivated with the compiler option `checkedErrors`, so existing codebases can ignore the new rule if desired and keep unsafe exceptions unhandled.
 
-A new directive `// @ts-ignore-exception`, which only ignores `checkedThrows`, allows for any unhandled call sites in existing code to be ignored in existing projects which.
+A new directive `// @ts-ignore-exception`, which only ignores `checkedErrors`, allows for any unhandled call sites in existing code to be ignored in existing projects which.
 
 New code fixes (including wrap with try/catch) have been added to help refactoring towards safe exception handling.
 
@@ -261,7 +261,7 @@ Typed exception systems have real costs:
 - Effect contracts can require maintenance
 - Ecosystem adoption is non-trivial
 - Library boundaries must declare thrown/rejected types
-- Performance of TypeScript will be affected – even if `checkedThrows` is disabled
+- Performance of TypeScript will be affected – even if `checkedErrors` is disabled
 - This must be coordinated on the TypeScript roadmap (e.g. `go` migration)
 
 Typed exceptions have been discussed in TypeScript before and marked as not planned due to adoption concerns:

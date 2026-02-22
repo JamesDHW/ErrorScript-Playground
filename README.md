@@ -54,7 +54,7 @@ You can replace the contents of this folder with a copy of your fork’s `built/
 
 ## Compiler options
 
-The playground sets **`checkedThrows: true`** by default so ErrorScript’s checked-throws behavior is enabled. Other options (target, module, strict, jsx) are configurable in the Playground UI.
+The playground sets **`checkedErrors: true`** by default so ErrorScript’s checked-throws behavior is enabled. Other options (target, module, strict, jsx) are configurable in the Playground UI.
 
 ## How it works
 
