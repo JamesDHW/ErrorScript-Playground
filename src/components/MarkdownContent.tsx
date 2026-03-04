@@ -61,6 +61,11 @@ export const baseMarkdownComponents: Components = {
   strong: ({ children }) => (
     <strong className="font-semibold text-[#1a1a1a]">{children}</strong>
   ),
+  blockquote: ({ children }) => (
+    <blockquote className="my-4 pl-4 border-l-4 border-red-300 bg-red-100 font-semibold py-2 pr-4 rounded-r text-gray-700 [&>p]:mb-0 [&>p:last-child]:mb-0">
+      {children}
+    </blockquote>
+  ),
 }
 
 type MarkdownContentProps = {
