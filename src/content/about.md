@@ -336,7 +336,7 @@ Unavoidable and odd throws happen with or without checked exceptions; encouragin
 
 Many language designers regard checked exceptions as a net negative; the ES spec has 400+ throw sites and no clear avoidable vs unavoidable split (e.g. `JSON.parse` vs `new RegExp`), so deciding what to check is messy.
 
-We can scope checking to user-declared throws and leave built-ins as “may throw”; the fuzzy line doesn’t remove the value of checking where it’s explicit. These _potential_ throws exist anyway in the underlying JavaScript at runtime – even working to correctly specify the possible thrown types is difficult, but not impossible.
+ErrorScript scopes checking to user-declared throws and leave built-ins as “may throw”; the fuzzy line doesn’t remove the value of checking where it’s explicit - we're trying to make the `throw` keyword safe to use in the context of application code, not check all possible errors. These _potential_ throws exist with or without checked exceptions in the underlying JavaScript at runtime - ErrorScript doesn't aim to solve this issue yet, it can provide substantial language value without this capability.
 
 ### Performance
 
