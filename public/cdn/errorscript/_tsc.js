@@ -46408,21 +46408,6 @@ function prefersTsExtension(allowedEndings) {
   return tsPriority > -1 && tsPriority < allowedEndings.indexOf(2 /* JsExtension */);
 }
 
-// src/compiler/nativeThrowMap.ts
-var NATIVE_THROW_MAP = {
-  "JSON.parse": { throws: ["SyntaxError"] },
-  "JSON.stringify": { throws: ["TypeError"] },
-  "decodeURI": { throws: ["URIError"] },
-  "decodeURIComponent": { throws: ["URIError"] },
-  "encodeURI": { throws: ["URIError"] },
-  "encodeURIComponent": { throws: ["URIError"] },
-  "URL": { throws: ["TypeError"] },
-  "url.URL": { throws: ["TypeError"] },
-  "URLSearchParams": { throws: ["TypeError"] },
-  "url.URLSearchParams": { throws: ["TypeError"] },
-  "fetch": { rejects: ["TypeError"] }
-};
-
 // src/compiler/checker.ts
 var ambientModuleSymbolRegex = /^".+"$/;
 var anon = "(anonymous)";
@@ -77901,7 +77886,7 @@ function createTypeChecker(host) {
       }
     }
     if (checkedErrors) {
-      const effectiveThrows = getEffectiveThrows(signature, node);
+      const effectiveThrows = getEffectiveThrows(signature);
       const returnType2 = getReturnTypeOfSignature(signature);
       const isAssertNeverLike = returnType2 === neverType && ((_d = node.arguments) == null ? void 0 : _d.length) && getTypeOfNode(node.arguments[0]) === neverType;
       if (effectiveThrows !== neverType && !isHandledByTry(node) && !isHandledByPropagation(node) && !isAssertNeverLike) {
@@ -84997,7 +84982,7 @@ function createTypeChecker(host) {
     const args = node.arguments;
     const isAssertNeverLike = returnType === neverType && (args == null ? void 0 : args.length) && getTypeOfNode(args[0]) === neverType;
     if (isAssertNeverLike) return neverType;
-    return getEffectiveThrows(signature, node);
+    return getEffectiveThrows(signature);
   }
   function collectThrownTypesFromInvocation(node, direct, thrownTypeOfExpression2) {
     const fromCallee = thrownTypeOfExpression2(node.expression);
@@ -85200,20 +85185,6 @@ function createTypeChecker(host) {
     if (!getFunctionBodyForThrownType(funcDecl)) return void 0;
     return funcDecl;
   }
-  function getTypeFromThrowMapNames(names) {
-    if (!checkedErrors || names.length === 0) return neverType;
-    const types = [];
-    for (const name of names) {
-      const t = getGlobalType(
-        name,
-        0,
-        /*reportErrors*/
-        false
-      );
-      if (t && t !== errorType) types.push(t);
-    }
-    return types.length === 0 ? neverType : types.length === 1 ? types[0] : getUnionType(types);
-  }
   function getDeclaredThrowsType(signature) {
     if (signature.target && signature.mapper) {
       const base = getDeclaredThrowsType(signature.target);
@@ -85244,7 +85215,7 @@ function createTypeChecker(host) {
     }
     return void 0;
   }
-  function getEffectiveThrows(signature, callNode) {
+  function getEffectiveThrows(signature) {
     const decl = signature.declaration;
     if (decl && isFunctionLike(decl) && (getFunctionFlags(decl) & 2 /* Async */) !== 0) {
       return neverType;
@@ -85256,26 +85227,16 @@ function createTypeChecker(host) {
     if (getFunctionBodyForThrownType(funcDecl)) {
       return thrownTypeOfFunctionLike(funcDecl);
     }
-    const symbol = getSymbolOfDeclaration(decl);
-    const key = getFullyQualifiedName(symbol, callNode);
-    const entry = NATIVE_THROW_MAP[key];
-    if (entry == null ? void 0 : entry.throws) return getTypeFromThrowMapNames(entry.throws);
     return neverType;
   }
-  function getEffectiveRejects(signature, callNode) {
+  function getEffectiveRejects(signature) {
     const declared = getDeclaredRejectsType(signature);
     if (declared !== void 0) return declared;
     const decl = signature.declaration;
     if (!decl || !isFunctionLike(decl)) return neverType;
     const funcDecl = decl;
     const body = getFunctionBodyForThrownType(funcDecl);
-    if (!body) {
-      const symbol = getSymbolOfDeclaration(decl);
-      const key = getFullyQualifiedName(symbol, callNode);
-      const entry = NATIVE_THROW_MAP[key];
-      if (entry == null ? void 0 : entry.rejects) return getTypeFromThrowMapNames(entry.rejects);
-      return neverType;
-    }
+    if (!body) return neverType;
     if ((getFunctionFlags(funcDecl) & 2 /* Async */) !== 0) {
       return getRejectEffectOfAsyncFunction(funcDecl);
     }
@@ -85283,19 +85244,11 @@ function createTypeChecker(host) {
   }
   function getInferredThrowsType(signature) {
     if (getDeclaredThrowsType(signature) !== void 0) return neverType;
-    return getEffectiveThrows(
-      signature,
-      /*callNode*/
-      void 0
-    );
+    return getEffectiveThrows(signature);
   }
   function getInferredRejectsType(signature) {
     if (getDeclaredRejectsType(signature) !== void 0) return neverType;
-    return getEffectiveRejects(
-      signature,
-      /*callNode*/
-      void 0
-    );
+    return getEffectiveRejects(signature);
   }
   function getRejectEffectOfAsyncFunction(decl) {
     if (!checkedErrors || !rejectEffectAsyncCache) return neverType;
@@ -85396,7 +85349,7 @@ function createTypeChecker(host) {
       rejectEffectCache.set(expr, neverType);
       return neverType;
     }
-    const effect = getEffectiveRejects(signature, call);
+    const effect = getEffectiveRejects(signature);
     rejectEffectCache.set(expr, effect);
     return effect;
   }
