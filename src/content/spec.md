@@ -511,4 +511,3 @@ These are either explicit in your example or implied by test coverage:
 
 - Recursive/cyclic call graphs degrade inferred effect to unknown.
 - Higher-order function effect inference (propagating throws from function arguments) is not specified/guaranteed by current tests.
-- Stdlib throw mappings are limited (JSON.parse is mapped; others unspecified here).

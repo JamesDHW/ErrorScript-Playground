@@ -474,7 +474,7 @@ function demoInstanceofRefactor(input: string) {
         const n = computeUserId(input);
         return n;
     } catch (e) {
-        // e: ParseError | RangeError — refactor adds instanceof branches
+        // e: ParseError | RangeError – refactor adds instanceof branches
         return -1;
     }
 }

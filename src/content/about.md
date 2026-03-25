@@ -118,7 +118,7 @@ function start() {
 }
 ```
 
-The "sad" path can be separated from the "happy" path, making code easier to understand, however, If you don't handle the exception, you will crash your program and there is no way to _prove_ you handled all cases. Additionally, `catch (e)` gives no type information which is less ergonomic in giving hints about which errors to handle.
+The "sad" path can be separated from the "happy" path, making code easier to understand, however, if you don't handle the exception, you will crash your program and there is no way to _prove_ you handled all cases. Additionally, `catch (e)` gives no type information which is less ergonomic in giving hints about which errors to handle.
 
 In general, `throw` in your code is not safe, as it is easy to unintentionally forget to catch the resulting exception.
 
@@ -163,7 +163,7 @@ A common alternative is returning a `Result<Val, Err>`-style type.
 
 Libraries like [ErrorE](https://errore.org/) explore this approach further and provide ergonomic helpers.
 
-This strategy is explicit and safe — but it pushes error handling directly into the happy path:
+This strategy is explicit and safe but it pushes error handling directly into the happy path:
 
 - Every call site must check for errors and early return (or unwrap)
 - Failure plumbing spreads across the codebase
@@ -192,7 +192,7 @@ This makes it clear at _build-time_ which errors need handling where, making the
 
 ## What Is ErrorScript?
 
-ErrorScript is a fork of TypeScript that experiments with this idea — while trying to feel as "TypeScript-native" as possible.
+ErrorScript is a fork of TypeScript that experiments with this idea – while trying to feel as "TypeScript-native" as possible.
 
 It introduces:
 
@@ -284,7 +284,7 @@ You must:
 
 ## Extension of TypeScript
 
-In order to help adoption, ErrorScript is designed to extend TypeScript as a superset, such that all valid TypeScript is valid ErrorScript – no syntax conflicting existing standards is introduced. All previous error handling patterns are still available and is down to the decision of the consumer of TypeScript how to use, checked exceptions only add more safety on top.
+In order to help adoption, ErrorScript is designed to extend TypeScript as a superset, such that all valid TypeScript is valid ErrorScript – no syntax conflicting existing standards is introduced. All previous error handling patterns are still available and is down to the decision of the consumer of TypeScript how to use, checked exceptions only add more safety on top. Without using declared `throws`/ `rejects`, the code is _exactly_ the same, everything is inferred from existing syntax.
 
 The feature can be activated/ deactivated with the compiler option `checkedErrors`, so existing codebases can ignore the new rule if desired and keep unsafe exceptions unhandled.
 
@@ -294,61 +294,49 @@ New code fixes (including wrap with try/catch) have been added to help refactori
 
 ---
 
-## An Argument Against Typed, Checked Exceptions
+## An Argument Against ErrorScript
 
-Many people believe that this feature could/should not be added to TypeScript. 
+There are some reasons to believe ErrorScript may make TypeScript worse as a language.
 
- A good place to look for the current objections to checked/typed exceptions is in [Learning TypeScript](https://www.learningtypescript.com/articles/why-typescript-doesnt-include-a-throws-keyword) (Josh Goldberg) and [Ryan Cavanaugh’s comment](https://github.com/microsoft/TypeScript/issues/13219#issuecomment-1515037604) on the TypeScript issue.
+Adding typed, checked exceptions would signal that using `throw` for modeled program failure is a promoted pattern, which many people believe should be discouraged.
 
-The TS team’s position is not “don’t use try/catch” but that *static* throw types don’t fit the platform—dynamic introspection in `catch` is the right fit today. The counter is that we can still make the exception channel cleaner where it’s used, and `throw` is already available for misuse; improving the tooling is better than leaving it untyped.
+### Exceptions as Control Flow
 
-### “Lack of Need” (Unions & First-Class Functions)
+Two views of usage of exceptions:
 
-In languages like Java, checked exceptions partly compensate for no union return types and weaker first-class functions; JS has both, so the argument is that JS “doesn’t need” checked exceptions.
+- Exceptions should be reserved for unexpected failures and bugs.
+- Exceptions are a valid way to represent non-local failure paths and can be made safer with typing.
 
-Other patterns existing doesn’t remove the need for a cleaner patterns where exceptions are used; we can improve that channel without forcing everyone to use it.
+The objection to ErrorScript is that it strengthens the second pattern.
 
-### Ecosystem Doesn’t Document Throws
+This may make the *happy path* of code easier to read, because error propagation is non-local and does not need to be threaded through every call. But it also makes control flow less local: handling may happen far away from the point where failure occurs, and the intent of the error path may become less obvious when reading code.
 
-Libraries rarely document what they throw (e.g. *“The Svelte documentation, over the course of 100 pages, simply says ‘throws an error’ in one occurrence”*); there are no strong exception hierarchies. So typed exceptions wouldn’t get accurate .d.ts data.
+In other words, ErrorScript may improve the readability of the happy path while making the overall behaviour of the program harder to reason about.
 
-The absence of documentation is a reason to add tooling that encourages it, not to withhold the feature; adoption can be gradual, as with strict null checks.
+Critics have made the comparison to Java, where it is common to see people re-throwing RuntimeException just to get the program to compile.
 
-### Unannotated Functions Break Either Default
+### Typed Exceptions Are Still Partial
 
-If unannotated = “doesn’t throw”, the feature doesn’t help until every dependency has throw clauses; if unannotated = “might throw anything”, `catch (e)` stays `unknown` and the feature adds little.
+JavaScript can always throw unexpected runtime failures that are outside the program’s declared error model.
 
-A default (e.g. unannotated = “may throw”) plus gradual annotation still improves annotated code and forces no big-bang change. ErrorScript adds _inferred_ thrown types, so it's not necessary (or recommended) for every function to declare what it throws (similar to inferred function return types).
+ErrorScript does not attempt to type all possible runtime exceptions. It only types the failures that the developer chooses to model. Critics argue that this can be misleading: once exceptions are typed, developers may over-trust the model and assume they have captured more of reality than they actually have.
 
-### Assignability and Propagation
+This is the same general trade-off TypeScript already makes elsewhere – but many people believe the exception channel is too unpredictable for this trade-off to be worthwhile.
 
-Callbacks that throw, `forEach` vs `setTimeout` (rethrow vs not), getters/setters (e.g. `[].length = -1`), and “rethrows from f except X” make the type system and .d.ts authoring complex.
+ErrorScript can fall back to normal TypeScript/JavaScript behaviour where needed – for example, a developer can choose to treat a `catch` variable as `unknown` when they want to handle unexpected exceptions defensively.
 
-ErrorScript shows that assignability and callback effects are tractable; the complexity is real but addressable. ErrorScript does not introduce the concept of "rethrows", effects are propagated automatically by inference if they are not handled and any declared `throws` on outer functions must be assignable to the inferred type which propagates.
+### Language Incentives Matter
 
-### Anything Can Throw
+Even if ErrorScript is technically sound enough, adding it to the language would encourage people to structure more control flow around `throw`.
 
-Property access and many built-ins can throw; JS allows throwing non-`Error` values. So “typed” exceptions are at best partial.
+That has two possible costs:
 
-Unavoidable and odd throws happen with or without checked exceptions; encouraging try/catch still catches these, and typing the *known* cases improves the rest. ErrorScript has typed exceptions, which allows for checking if `null` was thrown.
+- **Code quality cost:** more non-local control flow, more hidden failure paths, more use of exceptions where explicit value-based modeling _might_ be clearer
+- **Runtime cost:** exceptions can be expensive if used heavily in ordinary control flow compared to error-as-value
 
-### Checked Exceptions as Anti-Feature
+So one of the strongest argument against ErrorScript is, _"TypeScript should not encourage exceptions as a first-class mechanism for modeling expected program behaviour"_.
 
-Many language designers regard checked exceptions as a net negative; the ES spec has 400+ throw sites and no clear avoidable vs unavoidable split (e.g. `JSON.parse` vs `new RegExp`), so deciding what to check is messy.
-
-ErrorScript scopes checking to user-declared throws and leave built-ins as “may throw”; the fuzzy line doesn’t remove the value of checking where it’s explicit - we're trying to make the `throw` keyword safe to use in the context of application code, not check all possible errors. These _potential_ throws exist with or without checked exceptions in the underlying JavaScript at runtime - ErrorScript doesn't aim to solve this issue yet, it can provide substantial language value without this capability.
-
-### Performance
-
-In adding another feature to TypeScript, the performance in every codebase will be affected somewhat.
-
-This would need to be tested on large codebases and use correct caching strategies to ensure it doesn't add significant overhead. Even if there is a performance impact, we shouldn't ignore the potential program correctness brought with the feature – if we follow this principle, we wouldn't use TypeScript at all and just run plain old bug-prone JavaScript.
-
-### Pandora’s box
-
-My personal worry.
-
-Once a feature like this is adopted, it can’t be put back; any unintended effects on code quality have to be supported going forward.
+If that premise is true, then adding typed, checked exceptions in this way adds little value and may push the ecosystem in the wrong direction.
 
 ---
 
