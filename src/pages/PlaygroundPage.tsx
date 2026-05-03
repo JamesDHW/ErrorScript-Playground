@@ -54,7 +54,7 @@ function getInitialCode(searchParams: URLSearchParams): string {
 }
 
 function buildShareUrl(code: string): string {
-  const base = `${window.location.origin}/play`
+  const base = `${window.location.origin}/playground`
   try {
     const encoded = btoa(encodeURIComponent(code))
     return `${base}?code=${encoded}`
