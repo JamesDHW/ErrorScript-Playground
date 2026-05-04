@@ -1977,9 +1977,21 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Call_signature_rejection_types_0_and_1_are_incompatible_18076" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Call signature rejection types '{0}' and '{1}' are incompatible.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Call_signature_return_types_0_and_1_are_incompatible_2202" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Call signature return types '{0}' and '{1}' are incompatible.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Call_signature_thrown_types_0_and_1_are_incompatible_18072" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Call signature thrown types '{0}' and '{1}' are incompatible.]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -1989,9 +2001,21 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1_18077" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Call signatures with no arguments have incompatible rejection types '{0}' and '{1}'.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Call_signatures_with_no_arguments_have_incompatible_return_types_0_and_1_2204" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Call signatures with no arguments have incompatible return types '{0}' and '{1}'.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1_18073" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Call signatures with no arguments have incompatible thrown types '{0}' and '{1}'.]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -2841,9 +2865,21 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Construct_signature_rejection_types_0_and_1_are_incompatible_18078" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Construct signature rejection types '{0}' and '{1}' are incompatible.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Construct_signature_return_types_0_and_1_are_incompatible_2203" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Construct signature return types '{0}' and '{1}' are incompatible.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Construct_signature_thrown_types_0_and_1_are_incompatible_18074" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Construct signature thrown types '{0}' and '{1}' are incompatible.]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>
@@ -2853,9 +2889,21 @@
               </Str>
               <Disp Icon="Str" />
             </Item>
+            <Item ItemId=";Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1_18079" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Construct signatures with no arguments have incompatible rejection types '{0}' and '{1}'.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
             <Item ItemId=";Construct_signatures_with_no_arguments_have_incompatible_return_types_0_and_1_2205" ItemType="0" PsrId="306" Leaf="true">
               <Str Cat="Text">
                 <Val><![CDATA[Construct signatures with no arguments have incompatible return types '{0}' and '{1}'.]]></Val>
+              </Str>
+              <Disp Icon="Str" />
+            </Item>
+            <Item ItemId=";Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1_18075" ItemType="0" PsrId="306" Leaf="true">
+              <Str Cat="Text">
+                <Val><![CDATA[Construct signatures with no arguments have incompatible thrown types '{0}' and '{1}'.]]></Val>
               </Str>
               <Disp Icon="Str" />
             </Item>

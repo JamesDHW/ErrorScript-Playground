@@ -11437,7 +11437,87 @@ var Diagnostics = {
   Declared_throws_type_0_does_not_include_inferred_thrown_type_1: diag(18068, 1 /* Error */, "Declared_throws_type_0_does_not_include_inferred_thrown_type_1_18068", "Declared throws type '{0}' does not include inferred thrown type '{1}'."),
   Declared_rejects_type_0_does_not_include_inferred_rejection_type_1: diag(18069, 1 /* Error */, "Declared_rejects_type_0_does_not_include_inferred_rejection_type_1_18069", "Declared rejects type '{0}' does not include inferred rejection type '{1}'."),
   Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: diag(18070, 1 /* Error */, "Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verifie_18070", "Inferred thrown type is unknown (possible recursion or analysis limit); declared type cannot be verified."),
-  Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: diag(18071, 1 /* Error */, "Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_veri_18071", "Inferred rejection type is unknown (possible recursion or analysis limit); declared type cannot be verified.")
+  Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: diag(18071, 1 /* Error */, "Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_veri_18071", "Inferred rejection type is unknown (possible recursion or analysis limit); declared type cannot be verified."),
+  Call_signature_thrown_types_0_and_1_are_incompatible: diag(
+    18072,
+    1 /* Error */,
+    "Call_signature_thrown_types_0_and_1_are_incompatible_18072",
+    "Call signature thrown types '{0}' and '{1}' are incompatible.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1: diag(
+    18073,
+    1 /* Error */,
+    "Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1_18073",
+    "Call signatures with no arguments have incompatible thrown types '{0}' and '{1}'.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Construct_signature_thrown_types_0_and_1_are_incompatible: diag(
+    18074,
+    1 /* Error */,
+    "Construct_signature_thrown_types_0_and_1_are_incompatible_18074",
+    "Construct signature thrown types '{0}' and '{1}' are incompatible.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1: diag(
+    18075,
+    1 /* Error */,
+    "Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1_18075",
+    "Construct signatures with no arguments have incompatible thrown types '{0}' and '{1}'.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Call_signature_rejection_types_0_and_1_are_incompatible: diag(
+    18076,
+    1 /* Error */,
+    "Call_signature_rejection_types_0_and_1_are_incompatible_18076",
+    "Call signature rejection types '{0}' and '{1}' are incompatible.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1: diag(
+    18077,
+    1 /* Error */,
+    "Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1_18077",
+    "Call signatures with no arguments have incompatible rejection types '{0}' and '{1}'.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Construct_signature_rejection_types_0_and_1_are_incompatible: diag(
+    18078,
+    1 /* Error */,
+    "Construct_signature_rejection_types_0_and_1_are_incompatible_18078",
+    "Construct signature rejection types '{0}' and '{1}' are incompatible.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  ),
+  Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1: diag(
+    18079,
+    1 /* Error */,
+    "Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1_18079",
+    "Construct signatures with no arguments have incompatible rejection types '{0}' and '{1}'.",
+    /*reportsUnnecessary*/
+    void 0,
+    /*elidedInCompatabilityPyramid*/
+    true
+  )
 };
 
 // src/compiler/scanner.ts
@@ -57294,10 +57374,40 @@ function createTypeChecker(host) {
       }
       restoreFlags();
       const returnTypeNode = serializeReturnTypeForSignature(context, signature);
-      const declaredThrowsType = getDeclaredThrowsType(signature);
-      const declaredRejectsType = getDeclaredRejectsType(signature);
-      const throwsTypeNode = declaredThrowsType ? typeToTypeNodeHelper(declaredThrowsType, context) : void 0;
-      const rejectsTypeNode = declaredRejectsType ? typeToTypeNodeHelper(declaredRejectsType, context) : void 0;
+      let throwsTypeNode;
+      let rejectsTypeNode;
+      if (checkedErrors) {
+        const declaredThrows = getDeclaredThrowsType(signature);
+        if (declaredThrows !== void 0) {
+          throwsTypeNode = typeToTypeNodeHelper(declaredThrows, context);
+        }
+        if (throwsTypeNode === void 0) {
+          const throwsT = getEffectiveThrows(signature);
+          if (throwsT !== neverType) {
+            throwsTypeNode = typeToTypeNodeHelper(throwsT, context);
+          }
+        }
+        const declaredRejects = getDeclaredRejectsType(signature);
+        if (declaredRejects !== void 0) {
+          rejectsTypeNode = typeToTypeNodeHelper(declaredRejects, context);
+        }
+        if (rejectsTypeNode === void 0) {
+          const rejectsT = getEffectiveRejects(signature);
+          if (rejectsT !== neverType) {
+            rejectsTypeNode = typeToTypeNodeHelper(rejectsT, context);
+          }
+        }
+      }
+      if (!checkedErrors) {
+        const declaredThrowsUnchecked = getDeclaredThrowsType(signature);
+        if (declaredThrowsUnchecked) {
+          throwsTypeNode = typeToTypeNodeHelper(declaredThrowsUnchecked, context);
+        }
+        const declaredRejectsUnchecked = getDeclaredRejectsType(signature);
+        if (declaredRejectsUnchecked) {
+          rejectsTypeNode = typeToTypeNodeHelper(declaredRejectsUnchecked, context);
+        }
+      }
       let modifiers = options == null ? void 0 : options.modifiers;
       if (kind === 188 /* ConstructorType */ && signature.flags & 4 /* Abstract */) {
         const flags = modifiersToFlags(modifiers);
@@ -69300,13 +69410,14 @@ function createTypeChecker(host) {
       false,
       /*errorReporter*/
       void 0,
-      /*incompatibleErrorReporter*/
+      /*incompatibleReporters*/
       void 0,
       compareTypesAssignable,
       /*reportUnreliableMarkers*/
       void 0
     ) !== 0 /* False */;
   }
+  ;
   function isTopSignature(s) {
     if (!s.typeParameters && (!s.thisParameter || isTypeAny(getTypeOfParameter(s.thisParameter))) && s.parameters.length === 1 && signatureHasRestParameter(s)) {
       const paramType = getTypeOfParameter(s.parameters[0]);
@@ -69315,7 +69426,7 @@ function createTypeChecker(host) {
     }
     return false;
   }
-  function compareSignaturesRelated(source, target, checkMode, reportErrors2, errorReporter, incompatibleErrorReporter, compareTypes2, reportUnreliableMarkers) {
+  function compareSignaturesRelated(source, target, checkMode, reportErrors2, errorReporter, incompatibleReporters, compareTypes2, reportUnreliableMarkers) {
     if (source === target) {
       return -1 /* True */;
     }
@@ -69380,7 +69491,7 @@ function createTypeChecker(host) {
         const sourceSig = checkMode & 3 /* Callback */ || isInstantiatedGenericParameter(source, i) ? void 0 : getSingleCallSignature(getNonNullableType(sourceType));
         const targetSig = checkMode & 3 /* Callback */ || isInstantiatedGenericParameter(target, i) ? void 0 : getSingleCallSignature(getNonNullableType(targetType));
         const callbacks = sourceSig && targetSig && !getTypePredicateOfSignature(sourceSig) && !getTypePredicateOfSignature(targetSig) && getTypeFacts(sourceType, 50331648 /* IsUndefinedOrNull */) === getTypeFacts(targetType, 50331648 /* IsUndefinedOrNull */);
-        let related = callbacks ? compareSignaturesRelated(targetSig, sourceSig, checkMode & 8 /* StrictArity */ | (strictVariance ? 2 /* StrictCallback */ : 1 /* BivariantCallback */), reportErrors2, errorReporter, incompatibleErrorReporter, compareTypes2, reportUnreliableMarkers) : !(checkMode & 3 /* Callback */) && !strictVariance && compareTypes2(
+        let related = callbacks ? compareSignaturesRelated(targetSig, sourceSig, checkMode & 8 /* StrictArity */ | (strictVariance ? 2 /* StrictCallback */ : 1 /* BivariantCallback */), reportErrors2, errorReporter, incompatibleReporters, compareTypes2, reportUnreliableMarkers) : !(checkMode & 3 /* Callback */) && !strictVariance && compareTypes2(
           sourceType,
           targetType,
           /*reportErrors*/
@@ -69404,8 +69515,47 @@ function createTypeChecker(host) {
       }
     }
     if (!(checkMode & 4 /* IgnoreReturnTypes */)) {
+      const applyCheckedThrowsAndRejectsToResult = () => {
+        if (!checkedErrors) {
+          return true;
+        }
+        const sourceThrows = getEffectiveThrows(source);
+        const targetThrows = getEffectiveThrows(target);
+        const throwsRelated = checkMode & 1 /* BivariantCallback */ && compareTypes2(
+          targetThrows,
+          sourceThrows,
+          /*reportErrors*/
+          false
+        ) || compareTypes2(sourceThrows, targetThrows, reportErrors2);
+        if (!throwsRelated) {
+          if (reportErrors2 && (incompatibleReporters == null ? void 0 : incompatibleReporters.thrownTypes)) {
+            incompatibleReporters.thrownTypes(sourceThrows, targetThrows);
+          }
+          return false;
+        }
+        result &= throwsRelated;
+        const sourceRejects = getEffectiveRejects(source);
+        const targetRejects = getEffectiveRejects(target);
+        const rejectsRelated = checkMode & 1 /* BivariantCallback */ && compareTypes2(
+          targetRejects,
+          sourceRejects,
+          /*reportErrors*/
+          false
+        ) || compareTypes2(sourceRejects, targetRejects, reportErrors2);
+        if (!rejectsRelated) {
+          if (reportErrors2 && (incompatibleReporters == null ? void 0 : incompatibleReporters.rejectionTypes)) {
+            incompatibleReporters.rejectionTypes(sourceRejects, targetRejects);
+          }
+          return false;
+        }
+        result &= rejectsRelated;
+        return true;
+      };
       const targetReturnType = isResolvingReturnTypeOfSignature(target) ? anyType : target.declaration && isJSConstructor(target.declaration) ? getDeclaredTypeOfClassOrInterface(getMergedSymbol(target.declaration.symbol)) : getReturnTypeOfSignature(target);
       if (targetReturnType === voidType || targetReturnType === anyType) {
+        if (!applyCheckedThrowsAndRejectsToResult()) {
+          return 0 /* False */;
+        }
         return result;
       }
       const sourceReturnType = isResolvingReturnTypeOfSignature(source) ? anyType : source.declaration && isJSConstructor(source.declaration) ? getDeclaredTypeOfClassOrInterface(getMergedSymbol(source.declaration.symbol)) : getReturnTypeOfSignature(source);
@@ -69427,9 +69577,12 @@ function createTypeChecker(host) {
           /*reportErrors*/
           false
         ) || compareTypes2(sourceReturnType, targetReturnType, reportErrors2);
-        if (!result && reportErrors2 && incompatibleErrorReporter) {
-          incompatibleErrorReporter(sourceReturnType, targetReturnType);
+        if (!result && reportErrors2 && (incompatibleReporters == null ? void 0 : incompatibleReporters.returnTypes)) {
+          incompatibleReporters.returnTypes(sourceReturnType, targetReturnType);
         }
+      }
+      if (!applyCheckedThrowsAndRejectsToResult()) {
+        return 0 /* False */;
       }
     }
     return result;
@@ -69742,7 +69895,12 @@ function createTypeChecker(host) {
           }
         }
       }
-      const diag2 = createDiagnosticForNodeFromMessageChain(getSourceFileOfNode(errorNode), errorNode, errorInfo, relatedInformation);
+      const errorFile = getSourceFileOfNode(errorNode);
+      const argumentAssignabilityHead = headMessage === Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1 || headMessage === Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1_with_exactOptionalPropertyTypes_Colon_true_Consider_adding_undefined_to_the_types_of_the_target_s_properties;
+      const widenMultilineBlockArrowArgumentSpan = checkedErrors && argumentAssignabilityHead && !!errorNode && isArrowFunction(errorNode) && isBlock(errorNode.body) && getLineAndCharacterOfPosition(errorFile, errorNode.body.pos).line < getLineAndCharacterOfPosition(errorFile, errorNode.body.end).line;
+      const widenedSpanStart = widenMultilineBlockArrowArgumentSpan && errorNode ? skipTrivia(errorFile.text, errorNode.pos) : void 0;
+      const widenedSpanLength = widenedSpanStart !== void 0 && errorNode ? errorNode.end - widenedSpanStart : void 0;
+      const diag2 = widenedSpanStart !== void 0 && widenedSpanLength !== void 0 ? createFileDiagnosticFromMessageChain(errorFile, widenedSpanStart, widenedSpanLength, errorInfo, relatedInformation) : createDiagnosticForNodeFromMessageChain(errorFile, errorNode, errorInfo, relatedInformation);
       if (relatedInfo) {
         addRelatedInfo(diag2, ...relatedInfo);
       }
@@ -69832,6 +69990,36 @@ function createTypeChecker(host) {
             } else {
               const prefix = msg.code === Diagnostics.Construct_signature_return_types_0_and_1_are_incompatible.code || msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_return_types_0_and_1.code ? "new " : "";
               const params = msg.code === Diagnostics.Call_signatures_with_no_arguments_have_incompatible_return_types_0_and_1.code || msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_return_types_0_and_1.code ? "" : "...";
+              path = `${prefix}${path}(${params})`;
+            }
+            break;
+          }
+          case Diagnostics.Call_signature_thrown_types_0_and_1_are_incompatible.code:
+          case Diagnostics.Construct_signature_thrown_types_0_and_1_are_incompatible.code:
+          case Diagnostics.Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code:
+          case Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code:
+          case Diagnostics.Call_signature_rejection_types_0_and_1_are_incompatible.code:
+          case Diagnostics.Construct_signature_rejection_types_0_and_1_are_incompatible.code:
+          case Diagnostics.Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code:
+          case Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code: {
+            if (path.length === 0) {
+              let mappedMsg = msg;
+              if (msg.code === Diagnostics.Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code) {
+                mappedMsg = Diagnostics.Call_signature_thrown_types_0_and_1_are_incompatible;
+              }
+              if (msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code) {
+                mappedMsg = Diagnostics.Construct_signature_thrown_types_0_and_1_are_incompatible;
+              }
+              if (msg.code === Diagnostics.Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code) {
+                mappedMsg = Diagnostics.Call_signature_rejection_types_0_and_1_are_incompatible;
+              }
+              if (msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code) {
+                mappedMsg = Diagnostics.Construct_signature_rejection_types_0_and_1_are_incompatible;
+              }
+              secondaryRootErrors.unshift([mappedMsg, args[0], args[1]]);
+            } else {
+              const prefix = msg.code === Diagnostics.Construct_signature_thrown_types_0_and_1_are_incompatible.code || msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code || msg.code === Diagnostics.Construct_signature_rejection_types_0_and_1_are_incompatible.code || msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code ? "new " : "";
+              const params = msg.code === Diagnostics.Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code || msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1.code || msg.code === Diagnostics.Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code || msg.code === Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1.code ? "" : "...";
               path = `${prefix}${path}(${params})`;
             }
             break;
@@ -71794,7 +71982,6 @@ function createTypeChecker(host) {
         }
       }
       let result2 = -1 /* True */;
-      const incompatibleReporter = kind === 1 /* Construct */ ? reportIncompatibleConstructSignatureReturn : reportIncompatibleCallSignatureReturn;
       const sourceObjectFlags = getObjectFlags(source2);
       const targetObjectFlags = getObjectFlags(target2);
       if (sourceObjectFlags & 64 /* Instantiated */ && targetObjectFlags & 64 /* Instantiated */ && source2.symbol === target2.symbol || sourceObjectFlags & 4 /* Reference */ && targetObjectFlags & 4 /* Reference */ && source2.target === target2.target) {
@@ -71807,7 +71994,7 @@ function createTypeChecker(host) {
             true,
             reportErrors2,
             intersectionState,
-            incompatibleReporter(sourceSignatures[i], targetSignatures[i])
+            makeSignatureIncompatibleReporters(kind, sourceSignatures[i], targetSignatures[i])
           );
           if (!related) {
             return 0 /* False */;
@@ -71818,7 +72005,7 @@ function createTypeChecker(host) {
         const eraseGenerics = relation === comparableRelation;
         const sourceSignature = first(sourceSignatures);
         const targetSignature = first(targetSignatures);
-        result2 = signatureRelatedTo(sourceSignature, targetSignature, eraseGenerics, reportErrors2, intersectionState, incompatibleReporter(sourceSignature, targetSignature));
+        result2 = signatureRelatedTo(sourceSignature, targetSignature, eraseGenerics, reportErrors2, intersectionState, makeSignatureIncompatibleReporters(kind, sourceSignature, targetSignature));
         if (!result2 && reportErrors2 && kind === 1 /* Construct */ && sourceObjectFlags & targetObjectFlags && (((_a2 = targetSignature.declaration) == null ? void 0 : _a2.kind) === 179 /* Constructor */ || ((_b = sourceSignature.declaration) == null ? void 0 : _b.kind) === 179 /* Constructor */)) {
           const constructSignatureToString = (signature) => signatureToString(
             signature,
@@ -71844,7 +72031,7 @@ function createTypeChecker(host) {
                 true,
                 shouldElaborateErrors,
                 intersectionState,
-                incompatibleReporter(s, t)
+                makeSignatureIncompatibleReporters(kind, s, t)
               );
               if (related) {
                 result2 &= related;
@@ -71892,9 +72079,47 @@ function createTypeChecker(host) {
       }
       return (source2, target2) => reportIncompatibleError(Diagnostics.Construct_signature_return_types_0_and_1_are_incompatible, typeToString(source2), typeToString(target2));
     }
-    function signatureRelatedTo(source2, target2, erase, reportErrors2, intersectionState, incompatibleReporter) {
+    function reportIncompatibleCallSignatureThrows(siga, sigb) {
+      if (siga.parameters.length === 0 && sigb.parameters.length === 0) {
+        return (source2, target2) => reportIncompatibleError(Diagnostics.Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1, typeToString(source2), typeToString(target2));
+      }
+      return (source2, target2) => reportIncompatibleError(Diagnostics.Call_signature_thrown_types_0_and_1_are_incompatible, typeToString(source2), typeToString(target2));
+    }
+    function reportIncompatibleConstructSignatureThrows(siga, sigb) {
+      if (siga.parameters.length === 0 && sigb.parameters.length === 0) {
+        return (source2, target2) => reportIncompatibleError(Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1, typeToString(source2), typeToString(target2));
+      }
+      return (source2, target2) => reportIncompatibleError(Diagnostics.Construct_signature_thrown_types_0_and_1_are_incompatible, typeToString(source2), typeToString(target2));
+    }
+    function reportIncompatibleCallSignatureRejects(siga, sigb) {
+      if (siga.parameters.length === 0 && sigb.parameters.length === 0) {
+        return (source2, target2) => reportIncompatibleError(Diagnostics.Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1, typeToString(source2), typeToString(target2));
+      }
+      return (source2, target2) => reportIncompatibleError(Diagnostics.Call_signature_rejection_types_0_and_1_are_incompatible, typeToString(source2), typeToString(target2));
+    }
+    function reportIncompatibleConstructSignatureRejects(siga, sigb) {
+      if (siga.parameters.length === 0 && sigb.parameters.length === 0) {
+        return (source2, target2) => reportIncompatibleError(Diagnostics.Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1, typeToString(source2), typeToString(target2));
+      }
+      return (source2, target2) => reportIncompatibleError(Diagnostics.Construct_signature_rejection_types_0_and_1_are_incompatible, typeToString(source2), typeToString(target2));
+    }
+    function makeSignatureIncompatibleReporters(kind, siga, sigb) {
+      if (kind === 1 /* Construct */) {
+        return {
+          returnTypes: reportIncompatibleConstructSignatureReturn(siga, sigb),
+          thrownTypes: reportIncompatibleConstructSignatureThrows(siga, sigb),
+          rejectionTypes: reportIncompatibleConstructSignatureRejects(siga, sigb)
+        };
+      }
+      return {
+        returnTypes: reportIncompatibleCallSignatureReturn(siga, sigb),
+        thrownTypes: reportIncompatibleCallSignatureThrows(siga, sigb),
+        rejectionTypes: reportIncompatibleCallSignatureRejects(siga, sigb)
+      };
+    }
+    function signatureRelatedTo(source2, target2, erase, reportErrors2, intersectionState, incompatibleReporters) {
       const checkMode = relation === subtypeRelation ? 16 /* StrictTopSignature */ : relation === strictSubtypeRelation ? 16 /* StrictTopSignature */ | 8 /* StrictArity */ : 0 /* None */;
-      return compareSignaturesRelated(erase ? getErasedSignature(source2) : source2, erase ? getErasedSignature(target2) : target2, checkMode, reportErrors2, reportError, incompatibleReporter, isRelatedToWorker2, reportUnreliableMapper);
+      return compareSignaturesRelated(erase ? getErasedSignature(source2) : source2, erase ? getErasedSignature(target2) : target2, checkMode, reportErrors2, reportError, incompatibleReporters, isRelatedToWorker2, reportUnreliableMapper);
       function isRelatedToWorker2(source3, target3, reportErrors3) {
         return isRelatedTo(
           source3,
@@ -84309,12 +84534,17 @@ function createTypeChecker(host) {
     }
     if (checkedErrors) {
       const throwsFromOperand = thrownTypeOfExpression(node.expression);
-      if (throwsFromOperand !== neverType && !isHandledByTry(node)) {
-        error2(node, Diagnostics.Unhandled_thrown_type_Colon_0, typeToString(throwsFromOperand));
-      }
       const rejectEffect = getRejectEffectOfExpression(node.expression);
-      if (rejectEffect !== neverType && !isHandledByTry(node)) {
-        error2(node, Diagnostics.Unhandled_promise_rejection_type_Colon_0, typeToString(rejectEffect));
+      if (!isHandledByTry(node)) {
+        const hasThrows = throwsFromOperand !== neverType;
+        const hasRejects = rejectEffect !== neverType;
+        if (hasRejects) {
+          const merged = hasThrows ? getUnionType([throwsFromOperand, rejectEffect]) : rejectEffect;
+          error2(node, Diagnostics.Unhandled_promise_rejection_type_Colon_0, typeToString(merged));
+        }
+        if (hasThrows && !hasRejects) {
+          error2(node, Diagnostics.Unhandled_thrown_type_Colon_0, typeToString(throwsFromOperand));
+        }
       }
     }
     return awaitedType;
@@ -180820,18 +181050,6 @@ function getSymbolDisplayPartsDocumentationAndSymbolKindWorker(typeChecker, symb
   }
   function addSignatureDisplayParts(signature, allSignatures, flags = 0 /* None */) {
     addRange(displayParts, signatureToDisplayParts(typeChecker, signature, enclosingDeclaration, flags | 32 /* WriteTypeArgumentsOfSignature */, maximumLength, verbosityLevel, typeWriterOut));
-    const inferredThrows = typeChecker.getInferredThrowsType(signature);
-    if (inferredThrows && (inferredThrows.flags & 262144 /* Never */) === 0) {
-      displayParts.push(spacePart());
-      displayParts.push(textPart("throws "));
-      addRange(displayParts, typeToDisplayParts(typeChecker, inferredThrows, enclosingDeclaration, 0 /* None */, maximumLength, verbosityLevel, typeWriterOut));
-    }
-    const inferredRejects = typeChecker.getInferredRejectsType(signature);
-    if (inferredRejects && (inferredRejects.flags & 262144 /* Never */) === 0) {
-      displayParts.push(spacePart());
-      displayParts.push(textPart("rejects "));
-      addRange(displayParts, typeToDisplayParts(typeChecker, inferredRejects, enclosingDeclaration, 0 /* None */, maximumLength, verbosityLevel, typeWriterOut));
-    }
     if (allSignatures.length > 1) {
       displayParts.push(spacePart());
       displayParts.push(punctuationPart(21 /* OpenParenToken */));

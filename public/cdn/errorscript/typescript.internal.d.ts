@@ -19193,6 +19193,14 @@ declare namespace ts {
         Declared_rejects_type_0_does_not_include_inferred_rejection_type_1: DiagnosticMessage;
         Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: DiagnosticMessage;
         Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verified: DiagnosticMessage;
+        Call_signature_thrown_types_0_and_1_are_incompatible: DiagnosticMessage;
+        Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1: DiagnosticMessage;
+        Construct_signature_thrown_types_0_and_1_are_incompatible: DiagnosticMessage;
+        Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1: DiagnosticMessage;
+        Call_signature_rejection_types_0_and_1_are_incompatible: DiagnosticMessage;
+        Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1: DiagnosticMessage;
+        Construct_signature_rejection_types_0_and_1_are_incompatible: DiagnosticMessage;
+        Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1: DiagnosticMessage;
     };
     /** @internal */
     function tokenIsIdentifierOrKeyword(token: SyntaxKind): boolean;

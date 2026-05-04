@@ -2139,5 +2139,13 @@
   "Declared_throws_type_0_does_not_include_inferred_thrown_type_1_18068": "Declared throws type '{0}' does not include inferred thrown type '{1}'.",
   "Declared_rejects_type_0_does_not_include_inferred_rejection_type_1_18069": "Declared rejects type '{0}' does not include inferred rejection type '{1}'.",
   "Inferred_thrown_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_verifie_18070": "Inferred thrown type is unknown (possible recursion or analysis limit); declared type cannot be verified.",
-  "Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_veri_18071": "Inferred rejection type is unknown (possible recursion or analysis limit); declared type cannot be verified."
+  "Inferred_rejection_type_is_unknown_possible_recursion_or_analysis_limit_declared_type_cannot_be_veri_18071": "Inferred rejection type is unknown (possible recursion or analysis limit); declared type cannot be verified.",
+  "Call_signature_thrown_types_0_and_1_are_incompatible_18072": "Call signature thrown types '{0}' and '{1}' are incompatible.",
+  "Call_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1_18073": "Call signatures with no arguments have incompatible thrown types '{0}' and '{1}'.",
+  "Construct_signature_thrown_types_0_and_1_are_incompatible_18074": "Construct signature thrown types '{0}' and '{1}' are incompatible.",
+  "Construct_signatures_with_no_arguments_have_incompatible_thrown_types_0_and_1_18075": "Construct signatures with no arguments have incompatible thrown types '{0}' and '{1}'.",
+  "Call_signature_rejection_types_0_and_1_are_incompatible_18076": "Call signature rejection types '{0}' and '{1}' are incompatible.",
+  "Call_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1_18077": "Call signatures with no arguments have incompatible rejection types '{0}' and '{1}'.",
+  "Construct_signature_rejection_types_0_and_1_are_incompatible_18078": "Construct signature rejection types '{0}' and '{1}' are incompatible.",
+  "Construct_signatures_with_no_arguments_have_incompatible_rejection_types_0_and_1_18079": "Construct signatures with no arguments have incompatible rejection types '{0}' and '{1}'."
 }
