@@ -2,7 +2,9 @@
 
 ## 1. Overview
 
-checkedErrors introduces checked error semantics to TypeScript by tracking effects:
+`checkedErrors` follows existing TypeScript assignability principles where possible. Effect types participate in assignability similarly to other structural type members.
+
+`checkedErrors` introduces checked error semantics to TypeScript by tracking effects:
 
 - Thrown effects for synchronous code (throws)
 - Rejected effects for Promise-like/async code (rejects)
@@ -138,6 +140,25 @@ function withFinally() {
 }
 withFinally(); // TS18063 Unhandled thrown type: "finally"
 ```
+
+A catch clause absorbs an effect only if control-flow analysis determines all escaping effect paths are handled.
+
+Example:
+
+```ts
+try {
+  boom();
+} catch (e) {
+  if (e instanceof Error) return;
+  throw e;
+}
+```
+
+If `boom` throws `Error`, the inferred escaping effect is never.
+
+If `boom` throws `CustomSyntaxError`, the inferred escaping effect is also never, because `CustomSyntaxError` is assignable to Error.
+
+If `boom` throws `unknown`, the escaping effect remains unknown.
 
 #### 3.3.2 Catch variable typing (sync+async)
 
@@ -280,6 +301,62 @@ async function unhandledOverload() {
 }
 ```
 
+### 4.6 Function type assignability includes effects
+
+Thrown and rejected effects participate in function type assignability, following the same variance rules as other parts of the function type: return-position effects are compared in the same direction as the return type; parameter-position effects (including callback parameters) follow normal parameter contravariance.
+
+For function types:
+
+```ts
+() => T throws E1
+() => T throws E2
+```
+
+the source function is assignable to the target function only if `E_source` is assignable to `E_target`. That is, a function may be assigned only where the target accepts all effects the source may produce on that channel.
+
+The same rules apply to `rejects` effects on Promise-returning function types: `E_source` must be assignable to `E_target` on the rejection channel.
+
+**Callback parameters:** when a function type appears in parameter position (for example a higher-order `boundary(cb: () => void throws never)`), effect clauses on that inner function type are compared like any other parameter type member. A caller may pass a callback whose declared effects are assignable to what the parameter type requires.
+
+**Contextual typing:** when a function expression is contextually typed by a target signature that includes `throws` / `rejects`, the implementation is checked against that target as usual; the contextual signature supplies the required effect types for inference and assignability checks at the expression.
+
+Examples (return-position `throws`):
+
+```ts
+class CustomSyntaxError extends Error {
+  name = "CustomSyntaxError"
+}
+
+declare function throwsError(): void throws Error;
+declare function throwsSyntaxError(): void throws CustomSyntaxError;
+
+let a: () => void throws Error = throwsSyntaxError; // OK
+let b: () => void throws CustomSyntaxError = throwsError; // Error
+```
+
+because `CustomSyntaxError` is assignable to `Error`, but `Error` is not assignable to `CustomSyntaxError`.
+
+### 4.7 `throws never` / `rejects never`
+
+`throws never` and `rejects never` represent effect-free boundaries within the checkedErrors model.
+
+No effect type is assignable to `never`.
+
+Examples:
+
+```ts
+declare function boundary(cb: () => void throws never): void;
+
+declare function throwsError(): void throws Error;
+
+boundary(() => {}); // OK
+boundary(throwsError); // Error
+```
+
+This allows APIs to declare effect boundaries where callbacks must fully handle their own effects.
+
+The same idea applies to `rejects never` on Promise-returning callback types where a boundary must not leak rejections through that callback channel.
+
 ## 5. Standard library modelling (observed)
 
 Stdlib throw/reject annotations are provided via a **curated compiler-internal mapping**, since .d.ts declarations have no bodies and cannot infer effects.
@@ -297,6 +374,8 @@ JSON.parse("{"); // TS18063 Unhandled thrown type: SyntaxError
 ## 6. Call-site Enforcement Rules
 
 Propagation is valid when the callee effect is assignable to the enclosing function’s effect on the corresponding channel (reject/throw).
+
+Effect propagation follows normal assignability rules. A propagated effect is valid only if the propagated thrown/rejected type is assignable to the enclosing function’s corresponding effect type.
 
 ### 6.1 Synchronous: TS18063
 
@@ -510,4 +589,4 @@ a(); // TS18063 Unhandled thrown type: unknown.
 These are either explicit in your example or implied by test coverage:
 
 - Recursive/cyclic call graphs degrade inferred effect to unknown.
-- Higher-order function effect inference (propagating throws from function arguments) is not specified/guaranteed by current tests.
+- Higher-order function assignability includes effect types, but some contextual typing and generic inference edge cases may still differ from intended semantics.
