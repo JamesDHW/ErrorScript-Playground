@@ -3,7 +3,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { CodeBlock } from './CodeBlock'
 
-export function getCodeChild(children: React.ReactNode): string {
+function getCodeChild(children: React.ReactNode): string {
   if (typeof children === 'string') return children
   if (Array.isArray(children) && children.length === 1 && typeof children[0] === 'string') {
     return children[0]
@@ -11,7 +11,7 @@ export function getCodeChild(children: React.ReactNode): string {
   return String(children)
 }
 
-export const baseMarkdownComponents: Components = {
+const baseMarkdownComponents: Components = {
   h1: ({ children }) => (
     <h1 className="text-xl font-semibold text-[#1a1a1a] mb-4 mt-0 break-words md:text-2xl">
       {children}
@@ -73,8 +73,7 @@ type MarkdownContentProps = {
   componentOverrides?: Partial<Components>
 }
 
-export function 
-MarkdownContent({ content, componentOverrides = {} }: MarkdownContentProps) {
+export function MarkdownContent({ content, componentOverrides = {} }: MarkdownContentProps) {
   return (
     <ReactMarkdown components={{ ...baseMarkdownComponents, ...componentOverrides }}>
       {content}

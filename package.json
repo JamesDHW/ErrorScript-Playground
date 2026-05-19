@@ -13,6 +13,7 @@
     "fetch-latest-release": "cp ../ErrorScript/typescript-6.0.0-errorscript.tgz public/cdn/errorscript-latest.tgz"
   },
   "dependencies": {
+    "@lglab/react-qr-code": "^1.7.0",
     "@typescript/sandbox": "^0.1.10",
     "lucide-react": "^0.575.0",
     "monaco-editor": "^0.52.0",

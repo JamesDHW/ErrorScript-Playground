@@ -1,0 +1,1 @@
+export { SlideStaticCode } from './SlideStaticCode'

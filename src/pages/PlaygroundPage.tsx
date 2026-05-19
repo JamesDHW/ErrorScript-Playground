@@ -200,6 +200,7 @@ export function PlaygroundPage() {
   useEffect(() => {
     if (!sandbox) return
     sandbox.setCompilerSettings({ target, module: moduleKind, strict, jsx, checkedErrors: true })
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshOutputs(sandbox)
   }, [sandbox, target, moduleKind, strict, jsx, refreshOutputs])
 
@@ -213,7 +214,7 @@ export function PlaygroundPage() {
 
   if (loadError) {
     return (
-      <div className="p-4 text-red-500 bg-[#1e1e1e] min-h-[calc(100vh-52px)] md:p-8">
+      <div className="flex min-h-0 flex-1 flex-col bg-[#1e1e1e] text-red-500">
         <p className="break-words">{loadError}</p>
         <p className="mt-4 text-sm text-white/70 md:text-base">
           Ensure Monaco is under /cdn/monaco/ and ErrorScript under /cdn/errorscript/ (see
@@ -224,7 +225,7 @@ export function PlaygroundPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-30px)] bg-[#1e1e1e] min-h-0">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-[#1e1e1e]">
       <div className="py-2 px-3 bg-[#2d2d2d] border-b border-white/10 flex items-center gap-2 flex-wrap md:px-4 md:gap-4">
         <span className="font-semibold text-white/90 text-sm md:text-base">Playground</span>
         <span className="text-white/70 text-sm md:text-base">ErrorScript</span>

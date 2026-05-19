@@ -42,7 +42,7 @@ function GetStartedCard({
 
 export function HomePage() {
   return (
-    <main className="min-h-[calc(100vh-52px)] bg-white max-w-[100vw]">
+    <main className="min-h-0 min-w-0 max-w-[100vw] flex-1">
       <section className="bg-brand text-white px-4 py-10 pb-12 md:px-8 md:py-16 md:pb-20">
         <div className="max-w-[1300px] mx-auto flex flex-wrap gap-6 md:gap-8 items-center justify-center">
           <div className="w-full text-center min-w-0 md:w-auto md:flex-[1_1_400px] md:max-w-[500px] md:text-left">
@@ -71,6 +71,7 @@ export function HomePage() {
           </div>
           <div className="w-full min-w-0 md:flex-[1_1_400px]">
             <CodeBlock
+              visible
               snippet={{
                 code: `declare function throwsError(): void throws Error;
 throwsError(); // TS18063: Unhandled thrown type: Error.
@@ -86,10 +87,8 @@ catch (e: Error) { /* e is correctly typed as Error! */ }`,
                   { line: 3, type: 'safe' },
                   { line: 4, type: 'unsafe' },
                   { line: 6, type: 'safe' },
-                  { line: 7, type: 'safe' },
                 ],
               }}
-              visible
             />
           </div>
         </div>
@@ -154,6 +153,7 @@ catch (e: Error) { /* e is correctly typed as Error! */ }`,
               This is the current state of the art approach for error handling in TypeScript, but it mixes success and failure paths in the same function.
             </p>
             <CodeBlock
+              visible
               snippet={{
                 code: `declare function fetchUser(): User | NetworkError;
 declare function loadConfig(): Config | StorageError | ParseError;
@@ -183,7 +183,6 @@ function start() {
 }`,
                 highlights: [],
               }}
-              visible
             />
           </div>
           <div className="flex flex-col w-full min-w-0 max-w-full break-words md:max-w-[1000px] md:text-left gap-3">
@@ -192,8 +191,11 @@ function start() {
             </p>
               <p>This is a built-in control flow mechanism to most languages, including JavaScript and TypeScript, but is currently not safe in either due to the lack of compile-time checking.</p>
             <CodeBlock
+              visible
               snippet={{
-                code: `declare function fetchUser(): User throws NetworkError;
+                code: `declare function assertNever(value: never): void;
+
+declare function fetchUser(): User throws NetworkError;
 declare function loadConfig(): Config throws StorageError | ParseError;
 declare function verifyPlan(user: User, cfg: Config): Plan throws ValidationError;
 
@@ -214,7 +216,6 @@ function start() {
 }`,
                 highlights: [],
               }}
-              visible
             />
           </div>
         </div>
@@ -267,6 +268,7 @@ function start() {
         <div className="flex flex-col gap-6 items-stretch max-w-full mx-auto md:flex-row md:items-start md:gap-6 md:max-w-[1500px]">
           <div className="min-w-0 flex-1 flex-[1_1_0]">
             <CodeBlock
+              visible
               snippet={{
                 code: `type Result = "pass" | "fail"
 
@@ -279,12 +281,12 @@ function verify(result: Result) throws ValidationError {
 }`,
                 highlights: [],
               }}
-              visible
             />
             <div className="text-center text-sm text-black/60 mt-2">ErrorScript file.</div>
           </div>
           <div className="min-w-0 flex-1 flex-[1_1_0]">
             <CodeBlock
+              visible
               snippet={{
                 code: `type Result = "pass" | "fail"
 
@@ -297,12 +299,12 @@ function verify(result: Result) throws ValidationError {
 }`,
                 highlights: [{ line: 2, type: 'unsafe' }],
               }}
-              visible
             />
             <div className="text-center text-sm text-black/60 mt-2">Exceptions are removed.</div>
           </div>
           <div className="min-w-0 flex-1 flex-[1_1_0]">
             <CodeBlock
+              visible
               snippet={{
                 code: `type Result = "pass" | "fail"
 
@@ -315,7 +317,6 @@ function verify(result: Result) {
 }`,
                 highlights: [],
               }}
-              visible
             />
             <div className="text-center text-sm text-black/60 mt-2">TypeScript file.</div>
           </div>

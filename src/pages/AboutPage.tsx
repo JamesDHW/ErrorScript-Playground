@@ -5,7 +5,7 @@ import aboutContent from '../content/about.md?raw'
 
 export function AboutPage() {
   return (
-    <main className="min-h-[calc(100vh-52px)] bg-gray-50">
+    <main className="min-h-0 min-w-0 flex-1">
       <article className="px-4 py-8 max-w-[720px] mx-auto md:px-8 md:py-12 md:pt-8 pb-12 md:pb-16">
         <MarkdownContent
           content={aboutContent}

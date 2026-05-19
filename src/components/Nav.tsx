@@ -15,7 +15,10 @@ export function Nav() {
         <span className="truncate">ErrorScript</span>
       </Link>
       <nav className="flex items-center gap-3 shrink-0 sm:gap-6">
-        <Link to="/playground" className="text-brand no-underline font-medium text-sm sm:text-base">
+        <Link to="/slides" className="text-white no-underline font-medium text-sm sm:text-base">
+          Slides
+        </Link>
+        <Link to="/playground" className="text-white no-underline font-medium text-sm sm:text-base">
           Playground
         </Link>
         <Link to="/about" className="text-white no-underline font-medium text-sm sm:text-base">

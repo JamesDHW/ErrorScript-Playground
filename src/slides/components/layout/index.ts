@@ -1,0 +1,5 @@
+export { SlideActTitle, type SlideActTitleVariant } from './SlideActTitle'
+export { SlideBody } from './SlideBody'
+export { SlideFrame } from './SlideFrame'
+export { SlideHero } from './SlideHero'
+export { SlideInterstitial } from './SlideInterstitial'

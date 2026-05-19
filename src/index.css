@@ -23,3 +23,21 @@
     min-height: 100vh;
   }
 }
+
+@layer components {
+  .monaco-editor .monaco-hover,
+  .monaco-editor .suggest-widget,
+  .monaco-editor .parameter-hints-widget {
+    border-radius: 0.75rem;
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+  }
+
+  .monaco-editor .monaco-hover .markdown-hover > div,
+  .monaco-editor .monaco-hover .hover-contents {
+    border-radius: inherit;
+  }
+}
